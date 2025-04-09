@@ -20,7 +20,7 @@ export const DEFAULT_RETRY_OPTIONS: RetryOptions = {
 export class OptimisticConcurrencyService {
   private readonly logger = new Logger(OptimisticConcurrencyService.name);
 
-  async executeWithRetry<T> (
+  async executeWithRetry<T>(
     operation: () => Promise<T>,
     options: Partial<RetryOptions> = {},
     context: string = 'operation'
@@ -40,11 +40,8 @@ export class OptimisticConcurrencyService {
           );
 
           await this.delay(delay);
-          
-          delay = Math.min(
-            delay * retryOptions.backoffFactor * (1 + 0.2 * Math.random()), 
-            retryOptions.maxDelay
-          );
+
+          delay = Math.min(delay * retryOptions.backoffFactor * (1 + 0.2 * Math.random()), retryOptions.maxDelay);
         } else if (this.isOptimisticLockError(error)) {
           throw new ConflictException(
             `Failed to complete ${context} after ${retryOptions.maxRetries} retries due to concurrent modifications`
@@ -56,11 +53,11 @@ export class OptimisticConcurrencyService {
     }
   }
 
-  private isOptimisticLockError (error: unknown): boolean {
+  private isOptimisticLockError(error: unknown): boolean {
     if (error instanceof ConflictException) {
       return true;
     }
-    
+
     if (error instanceof QueryFailedError) {
       const message = error.message.toLowerCase();
       return (
@@ -70,11 +67,11 @@ export class OptimisticConcurrencyService {
         message.includes('row was updated or deleted by another transaction')
       );
     }
-    
+
     return false;
   }
 
-  private delay (ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
-} 
+}

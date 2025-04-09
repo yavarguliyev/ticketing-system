@@ -7,6 +7,7 @@ import { CommandModule } from 'nestjs-command';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as winston from 'winston';
+import { APP_FILTER } from '@nestjs/core';
 
 import { MigrationService } from './cli/migrations/migration.service';
 import { SeedCommand } from './cli/seeding/seed.command';
@@ -26,7 +27,6 @@ import { TransactionInterceptor } from './http/interceptors/transaction.intercep
 import { DatabaseLockExceptionFilter } from './http/filters/database-lock.filter';
 import { OptimisticLockExceptionFilter } from './http/filters/optimistic-lock.filter';
 import { Ticket } from '../modules/tickets/entities/ticket.entity';
-import { APP_FILTER } from '@nestjs/core';
 
 @Global()
 @Module({
@@ -62,7 +62,7 @@ import { APP_FILTER } from '@nestjs/core';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        entities: [Ticket],
         synchronize: false,
         logging: false,
         maxQueryExecutionTime: 1000,
@@ -70,7 +70,7 @@ import { APP_FILTER } from '@nestjs/core';
         migrationsRun: true,
         migrationsTableName: 'migrations',
         migrationsTransactionMode: 'each'
-      }),
+      })
     }),
     TypeOrmModule.forFeature([Ticket]),
     CommandModule,
@@ -93,11 +93,11 @@ import { APP_FILTER } from '@nestjs/core';
     OptimisticConcurrencyService,
     {
       provide: APP_FILTER,
-      useClass: DatabaseLockExceptionFilter,
+      useClass: DatabaseLockExceptionFilter
     },
     {
       provide: APP_FILTER,
-      useClass: OptimisticLockExceptionFilter,
+      useClass: OptimisticLockExceptionFilter
     },
     {
       provide: 'winston',
@@ -131,7 +131,7 @@ import { APP_FILTER } from '@nestjs/core';
   ]
 })
 export class SharedModule implements NestModule {
-  configure (consumer: MiddlewareConsumer): void {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(ErrorHandlerMiddleware).forRoutes('*');
   }
 }

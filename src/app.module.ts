@@ -3,9 +3,6 @@ import { TicketsModule } from './modules/tickets/tickets.module';
 import { SharedModule } from './shared/shared.module';
 
 @Module({
-  imports: [
-    SharedModule,
-    TicketsModule
-  ]
+  imports: [SharedModule, TicketsModule]
 })
 export class AppModule {}
