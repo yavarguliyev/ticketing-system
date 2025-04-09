@@ -41,4 +41,4 @@ export class CreateTicketDto {
   @IsNumber()
   @IsPositive()
   quantity!: number;
-} 
+}

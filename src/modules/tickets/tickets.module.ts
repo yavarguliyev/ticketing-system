@@ -4,7 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Ticket } from './entities/ticket.entity';
 import { TicketsService } from './services/tickets.service';
 import { TicketsController } from './controllers/tickets.controller';
-import { TransactionInterceptor } from '../../shared/interceptors/transaction.interceptor';
+import { TransactionInterceptor } from '../../shared/http/interceptors/transaction.interceptor';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Ticket])],
@@ -13,8 +13,8 @@ import { TransactionInterceptor } from '../../shared/interceptors/transaction.in
     TicketsService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: TransactionInterceptor,
-    },
+      useClass: TransactionInterceptor
+    }
   ],
   exports: [TicketsService]
 })

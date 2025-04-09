@@ -21,4 +21,4 @@ export class BookTicketDto {
   @IsString()
   @IsOptional()
   userId?: string;
-} 
+}

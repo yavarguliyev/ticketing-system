@@ -14,4 +14,4 @@ export class UpdateTicketDto extends PartialType(CreateTicketDto) {
 
   @ApiProperty({ description: 'Updated quantity' })
   override quantity?: number;
-} 
+}

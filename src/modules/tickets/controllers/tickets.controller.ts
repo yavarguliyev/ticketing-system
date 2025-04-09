@@ -4,20 +4,20 @@ import { CreateTicketDto } from '../dto/create-ticket.dto';
 import { UpdateTicketDto } from '../dto/update-ticket.dto';
 import { Ticket } from '../entities/ticket.entity';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
-import { LowRateLimit, MediumRateLimit, SensitiveRateLimit } from '../../../shared/decorators/throttle.decorator';
+import { LowRateLimit, MediumRateLimit, SensitiveRateLimit } from '../../../shared/http/decorators/throttle.decorator';
 import { BookTicketDto } from '../dto/book-ticket.dto';
 
 @ApiTags('tickets')
 @Controller('tickets')
 export class TicketsController {
-  constructor (private readonly ticketsService: TicketsService) {}
+  constructor(private readonly ticketsService: TicketsService) {}
 
   @ApiOperation({ summary: 'Create a new ticket' })
   @ApiResponse({ status: 201, description: 'The ticket has been successfully created.', type: Ticket })
   @ApiResponse({ status: 400, description: 'Invalid input data.' })
   @LowRateLimit()
   @Post()
-  async create (@Body() createTicketDto: CreateTicketDto): Promise<Ticket> {
+  async create(@Body() createTicketDto: CreateTicketDto): Promise<Ticket> {
     return this.ticketsService.create(createTicketDto);
   }
 
@@ -25,7 +25,7 @@ export class TicketsController {
   @ApiResponse({ status: 200, description: 'Return all tickets.', type: [Ticket] })
   @MediumRateLimit()
   @Get()
-  async findAll (): Promise<Ticket[]> {
+  async findAll(): Promise<Ticket[]> {
     return this.ticketsService.findAll();
   }
 
@@ -35,7 +35,7 @@ export class TicketsController {
   @ApiResponse({ status: 404, description: 'Ticket not found.' })
   @MediumRateLimit()
   @Get(':id')
-  async findOne (@Param('id') id: string): Promise<Ticket> {
+  async findOne(@Param('id') id: string): Promise<Ticket> {
     return this.ticketsService.findOne(id);
   }
 
@@ -46,10 +46,7 @@ export class TicketsController {
   @ApiResponse({ status: 400, description: 'Invalid input data.' })
   @SensitiveRateLimit()
   @Patch(':id')
-  async update (
-    @Param('id') id: string,
-    @Body() updateTicketDto: UpdateTicketDto,
-  ): Promise<Ticket> {
+  async update(@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto): Promise<Ticket> {
     return this.ticketsService.update(id, updateTicketDto);
   }
 
@@ -59,7 +56,7 @@ export class TicketsController {
   @ApiResponse({ status: 404, description: 'Ticket not found.' })
   @SensitiveRateLimit()
   @Delete(':id')
-  async remove (@Param('id') id: string): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.ticketsService.remove(id);
   }
 
@@ -71,10 +68,7 @@ export class TicketsController {
   @ApiResponse({ status: 423, description: 'Resource is locked by another transaction.' })
   @SensitiveRateLimit()
   @Post(':id/book')
-  async bookTicket (
-    @Param('id') id: string,
-    @Body() bookTicketDto: BookTicketDto,
-  ): Promise<Ticket> {
+  async bookTicket(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.bookTicket(id, userId, bookTicketDto.quantity);
   }
@@ -86,10 +80,7 @@ export class TicketsController {
   @ApiResponse({ status: 423, description: 'Resource is locked by another transaction.' })
   @SensitiveRateLimit()
   @Post(':id/release')
-  async releaseTicket (
-    @Param('id') id: string,
-    @Body() bookTicketDto: BookTicketDto,
-  ): Promise<Ticket> {
+  async releaseTicket(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.releaseTicket(id, userId, bookTicketDto.quantity);
   }
@@ -101,9 +92,9 @@ export class TicketsController {
   @ApiResponse({ status: 404, description: 'Ticket not found.' })
   @MediumRateLimit()
   @Get(':id/availability')
-  async checkAvailability (
+  async checkAvailability(
     @Param('id') id: string,
-    @Query('quantity') quantity: number,
+    @Query('quantity') quantity: number
   ): Promise<{ available: boolean }> {
     const available = await this.ticketsService.checkAvailability(id, quantity);
     return { available };
@@ -117,10 +108,7 @@ export class TicketsController {
   @ApiResponse({ status: 500, description: 'Failed to book tickets after retries.' })
   @SensitiveRateLimit()
   @Post(':id/book-optimistic')
-  async bookTicketOptimistic (
-    @Param('id') id: string,
-    @Body() bookTicketDto: BookTicketDto,
-  ): Promise<Ticket> {
+  async bookTicketOptimistic(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.bookTicketOptimistic(id, userId, bookTicketDto.quantity);
   }
@@ -132,10 +120,7 @@ export class TicketsController {
   @ApiResponse({ status: 500, description: 'Failed to release tickets after retries.' })
   @MediumRateLimit()
   @Post(':id/release-optimistic')
-  async releaseTicketOptimistic (
-    @Param('id') id: string,
-    @Body() bookTicketDto: BookTicketDto,
-  ): Promise<Ticket> {
+  async releaseTicketOptimistic(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.releaseTicketOptimistic(id, userId, bookTicketDto.quantity);
   }
@@ -147,9 +132,9 @@ export class TicketsController {
   @ApiResponse({ status: 404, description: 'Ticket not found.' })
   @MediumRateLimit()
   @Get(':id/availability-optimistic')
-  async checkAvailabilityOptimistic (
+  async checkAvailabilityOptimistic(
     @Param('id') id: string,
-    @Query('quantity') quantity: number,
+    @Query('quantity') quantity: number
   ): Promise<{ available: boolean }> {
     const available = await this.ticketsService.checkAvailabilityOptimistic(id, quantity);
     return { available };

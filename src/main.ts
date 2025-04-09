@@ -1,15 +1,16 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { INestApplication } from '@nestjs/common';
-import { AppThrottlerGuard } from './shared/guards/throttler.guard';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
-import { AppValidationPipe } from './shared/pipes/validation.pipe';
-import { DatabaseLockExceptionFilter } from './shared/filters/database-lock.filter';
-import { OptimisticLockExceptionFilter } from './shared/filters/optimistic-lock.filter';
+import { INestApplication, Logger } from '@nestjs/common';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
-async function bootstrap (): Promise<void> {
+import { AppModule } from './app.module';
+import { DatabaseLockExceptionFilter } from './shared/http/filters/database-lock.filter';
+import { OptimisticLockExceptionFilter } from './shared/http/filters/optimistic-lock.filter';
+import { AppThrottlerGuard } from './shared/http/guards/throttler.guard';
+import { LoggingInterceptor } from './shared/http/interceptors/logging.interceptor';
+import { AppValidationPipe } from './shared/http/pipes/validation.pipe';
+
+async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
 
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
@@ -23,10 +24,7 @@ async function bootstrap (): Promise<void> {
   const loggingInterceptor: LoggingInterceptor = app.get(LoggingInterceptor);
   app.useGlobalInterceptors(loggingInterceptor);
 
-  app.useGlobalFilters(
-    new DatabaseLockExceptionFilter(),
-    new OptimisticLockExceptionFilter()
-  );
+  app.useGlobalFilters(new DatabaseLockExceptionFilter(), new OptimisticLockExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Ticketing System API')
@@ -34,6 +32,7 @@ async function bootstrap (): Promise<void> {
     .setVersion('1.0')
     .addTag('tickets')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
@@ -41,4 +40,7 @@ async function bootstrap (): Promise<void> {
   await app.listen(port);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  new Logger('Bootstrap').error(`Error: ${error instanceof Error ? `${error.message}` : 'Unknown error'}`);
+  process.exit(1);
+});

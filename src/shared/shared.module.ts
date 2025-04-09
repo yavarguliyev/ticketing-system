@@ -1,28 +1,28 @@
 import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TerminusModule } from '@nestjs/terminus';
-import { WinstonModule } from 'nest-winston';
-import * as winston from 'winston';
+import { WinstonModule, utilities } from 'nest-winston';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CommandModule } from 'nestjs-command';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HealthController } from './controllers/health.controller';
-import { ErrorHandlerMiddleware } from './middleware/error-handler.middleware';
-import { SeedingService } from './seeding/seeding.service';
-import { SeedCommand } from './seeding/seed.command';
-import { AppThrottlerGuard } from './guards/throttler.guard';
-import { LoggingInterceptor } from './interceptors/logging.interceptor';
-import { MigrationService } from './migrations/migration.service';
-import { DatabaseMetricsService } from './database/database-metrics.service';
-import { DatabaseBackupService } from './database/database-backup.service';
-import { DatabaseBackupCommand } from './database/database-backup.command';
+import * as winston from 'winston';
+
+import { MigrationService } from './cli/migrations/migration.service';
+import { SeedCommand } from './cli/seeding/seed.command';
+import { SeedingService } from './cli/seeding/seeding.service';
+import { DatabaseBackupCommand } from './database/backup/database-backup.command';
+import { DatabaseBackupService } from './database/backup/database-backup.service';
+import { DatabaseMetricsService } from './database/services/database-metrics.service';
+import { IsolationLevelService } from './database/services/isolation-level.service';
+import { TransactionService } from './database/services/transaction.service';
+import { HealthController } from './http/controllers/health.controller';
+import { IsolationLevelController } from './http/controllers/isolation-level.controller';
+import { ErrorHandlerMiddleware } from './http/middleware/error-handler.middleware';
+import { AppThrottlerGuard } from './http/guards/throttler.guard';
+import { LoggingInterceptor } from './http/interceptors/logging.interceptor';
+import { TransactionInterceptor } from './http/interceptors/transaction.interceptor';
 import { Ticket } from '../modules/tickets/entities/ticket.entity';
-import { TransactionService } from './services/transaction.service';
-import { TransactionInterceptor } from './interceptors/transaction.interceptor';
-import { DatabaseQueryLoggerService } from './database/database-query-logger.service';
-import { IsolationLevelService } from './services/isolation-level.service';
-import { IsolationLevelController } from './controllers/isolation-level.controller';
 
 @Global()
 @Module({
@@ -34,7 +34,11 @@ import { IsolationLevelController } from './controllers/isolation-level.controll
     WinstonModule.forRoot({
       transports: [
         new winston.transports.Console({
-          format: winston.format.combine(winston.format.timestamp(), winston.format.json())
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.json(),
+            utilities.format.nestLike('Ticketing System')
+          )
         })
       ]
     }),
@@ -46,7 +50,7 @@ import { IsolationLevelController } from './controllers/isolation-level.controll
     ]),
     TypeOrmModule.forFeature([Ticket]),
     CommandModule,
-    ScheduleModule.forRoot(),
+    ScheduleModule.forRoot()
   ],
   controllers: [HealthController, IsolationLevelController],
   providers: [
@@ -61,7 +65,6 @@ import { IsolationLevelController } from './controllers/isolation-level.controll
     DatabaseBackupCommand,
     TransactionService,
     TransactionInterceptor,
-    DatabaseQueryLoggerService,
     IsolationLevelService,
     {
       provide: 'winston',
@@ -90,12 +93,11 @@ import { IsolationLevelController } from './controllers/isolation-level.controll
     TypeOrmModule,
     TransactionService,
     TransactionInterceptor,
-    DatabaseQueryLoggerService,
     IsolationLevelService
   ]
 })
 export class SharedModule implements NestModule {
-  configure (consumer: MiddlewareConsumer): void {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(ErrorHandlerMiddleware).forRoutes('*');
   }
 }
