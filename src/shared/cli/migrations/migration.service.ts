@@ -7,13 +7,13 @@ import { DataSource, Migration } from 'typeorm';
 export class MigrationService {
   private readonly logger: Logger = new Logger(MigrationService.name);
 
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor (@InjectDataSource() private readonly dataSource: DataSource) {}
 
   @Command({
     command: 'migration:run',
     describe: 'Run all pending migrations'
   })
-  async runMigrations(): Promise<void> {
+  async runMigrations (): Promise<void> {
     const migrations: Migration[] = await this.dataSource.runMigrations();
 
     if (migrations.length === 0) {
@@ -25,7 +25,7 @@ export class MigrationService {
     command: 'migration:revert',
     describe: 'Revert the last executed migration'
   })
-  async revertLastMigration(): Promise<void> {
+  async revertLastMigration (): Promise<void> {
     await this.dataSource.undoLastMigration();
     const migrations: Migration[] = await this.dataSource.query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
 
@@ -40,7 +40,7 @@ export class MigrationService {
     command: 'migration:revert-all',
     describe: 'Revert all migrations'
   })
-  async revertAllMigrations(): Promise<void> {
+  async revertAllMigrations (): Promise<void> {
     const migrations: Migration[] = await this.dataSource.query('SELECT * FROM migrations ORDER BY id DESC');
 
     if (migrations.length === 0) {
@@ -58,7 +58,7 @@ export class MigrationService {
     command: 'migration:status',
     describe: 'Show the status of all migrations'
   })
-  async getMigrationStatus(): Promise<void> {
+  async getMigrationStatus (): Promise<void> {
     const migrations: Migration[] = await this.dataSource.query('SELECT * FROM migrations ORDER BY id ASC');
 
     if (migrations.length === 0) {

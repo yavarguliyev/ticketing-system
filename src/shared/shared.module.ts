@@ -1,5 +1,5 @@
 import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TerminusModule } from '@nestjs/terminus';
 import { WinstonModule, utilities } from 'nest-winston';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -16,13 +16,17 @@ import { DatabaseBackupService } from './database/backup/database-backup.service
 import { DatabaseMetricsService } from './database/services/database-metrics.service';
 import { IsolationLevelService } from './database/services/isolation-level.service';
 import { TransactionService } from './database/services/transaction.service';
+import { OptimisticConcurrencyService } from './database/services/optimistic-concurrency.service';
 import { HealthController } from './http/controllers/health.controller';
 import { IsolationLevelController } from './http/controllers/isolation-level.controller';
 import { ErrorHandlerMiddleware } from './http/middleware/error-handler.middleware';
 import { AppThrottlerGuard } from './http/guards/throttler.guard';
 import { LoggingInterceptor } from './http/interceptors/logging.interceptor';
 import { TransactionInterceptor } from './http/interceptors/transaction.interceptor';
+import { DatabaseLockExceptionFilter } from './http/filters/database-lock.filter';
+import { OptimisticLockExceptionFilter } from './http/filters/optimistic-lock.filter';
 import { Ticket } from '../modules/tickets/entities/ticket.entity';
+import { APP_FILTER } from '@nestjs/core';
 
 @Global()
 @Module({
@@ -48,6 +52,26 @@ import { Ticket } from '../modules/tickets/entities/ticket.entity';
         limit: 10
       }
     ]),
+    TypeOrmModule.forRootAsync({
+      imports: [SharedModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_NAME'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: false,
+        logging: false,
+        maxQueryExecutionTime: 1000,
+        migrations: [__dirname + '/../../migrations/*.js'],
+        migrationsRun: true,
+        migrationsTableName: 'migrations',
+        migrationsTransactionMode: 'each'
+      }),
+    }),
     TypeOrmModule.forFeature([Ticket]),
     CommandModule,
     ScheduleModule.forRoot()
@@ -66,6 +90,15 @@ import { Ticket } from '../modules/tickets/entities/ticket.entity';
     TransactionService,
     TransactionInterceptor,
     IsolationLevelService,
+    OptimisticConcurrencyService,
+    {
+      provide: APP_FILTER,
+      useClass: DatabaseLockExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: OptimisticLockExceptionFilter,
+    },
     {
       provide: 'winston',
       useFactory: () => {
@@ -93,11 +126,12 @@ import { Ticket } from '../modules/tickets/entities/ticket.entity';
     TypeOrmModule,
     TransactionService,
     TransactionInterceptor,
-    IsolationLevelService
+    IsolationLevelService,
+    OptimisticConcurrencyService
   ]
 })
 export class SharedModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): void {
+  configure (consumer: MiddlewareConsumer): void {
     consumer.apply(ErrorHandlerMiddleware).forRoutes('*');
   }
 }

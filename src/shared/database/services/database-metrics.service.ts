@@ -32,14 +32,14 @@ interface MaxConnectionsResult {
 export class DatabaseMetricsService implements OnModuleInit {
   private readonly logger: Logger = new Logger(DatabaseMetricsService.name);
 
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor (@InjectDataSource() private readonly dataSource: DataSource) {}
 
-  onModuleInit(): void {
+  onModuleInit (): void {
     void this.reportConnectionMetrics();
   }
 
   @Interval(60000)
-  async reportConnectionMetrics(): Promise<void> {
+  async reportConnectionMetrics (): Promise<void> {
     try {
       const metrics = await this.getConnectionPoolMetrics();
 
@@ -58,11 +58,11 @@ export class DatabaseMetricsService implements OnModuleInit {
     }
   }
 
-  async getConnectionPoolMetrics(): Promise<MetricsData> {
+  async getConnectionPoolMetrics (): Promise<MetricsData> {
     return await this.fetchConnectionPoolMetrics();
   }
 
-  private async fetchConnectionPoolMetrics(): Promise<MetricsData> {
+  private async fetchConnectionPoolMetrics (): Promise<MetricsData> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
 

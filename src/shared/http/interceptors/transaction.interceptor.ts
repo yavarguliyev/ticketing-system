@@ -10,9 +10,9 @@ interface CustomRequest extends Request {
 
 @Injectable()
 export class TransactionInterceptor implements NestInterceptor {
-  constructor(private readonly transactionService: TransactionService) {}
+  constructor (private readonly transactionService: TransactionService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept (context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const handler = context.getHandler();
     const target = context.getClass();
     const isolationLevel = this.transactionService.getIsolationLevel(target, handler.name);

@@ -5,13 +5,13 @@ import { SeedingService } from './seeding.service';
 
 @Injectable()
 export class SeedCommand {
-  constructor(private readonly seedingService: SeedingService) {}
+  constructor (private readonly seedingService: SeedingService) {}
 
   @Command({
     command: 'seed',
     describe: 'Seed the database'
   })
-  async seed(): Promise<void> {
+  async seed (): Promise<void> {
     await this.seedingService.seed();
   }
 
@@ -19,7 +19,7 @@ export class SeedCommand {
     command: 'seed:clear',
     describe: 'Clear seeded data'
   })
-  async clear(): Promise<void> {
+  async clear (): Promise<void> {
     await this.seedingService.clear();
   }
 }

@@ -9,9 +9,9 @@ export type TransactionCallback<T> = (entityManager: EntityManager) => Promise<T
 export class TransactionService {
   private readonly logger = new Logger(TransactionService.name);
 
-  constructor(private readonly dataSource: DataSource) {}
+  constructor (private readonly dataSource: DataSource) {}
 
-  async execute<T>(
+  async execute<T> (
     callback: TransactionCallback<T>,
     isolationLevel: IsolationLevel = 'READ COMMITTED',
     timeout?: number
@@ -47,26 +47,26 @@ export class TransactionService {
     }
   }
 
-  getIsolationLevel(target: object, propertyKey: string): IsolationLevel | undefined {
+  getIsolationLevel (target: object, propertyKey: string): IsolationLevel | undefined {
     return Reflect.getMetadata(TRANSACTION_ISOLATION_LEVEL, target, propertyKey) as IsolationLevel | undefined;
   }
 
-  getTimeout(target: object, propertyKey: string): number | undefined {
+  getTimeout (target: object, propertyKey: string): number | undefined {
     return Reflect.getMetadata(TRANSACTION_TIMEOUT, target, propertyKey) as number | undefined;
   }
 
-  async withTransaction<T>(
+  async withTransaction<T> (
     callback: TransactionCallback<T>,
     isolationLevel: IsolationLevel = 'READ COMMITTED'
   ): Promise<T> {
     return this.execute(callback, isolationLevel);
   }
 
-  async withSerializableTransaction<T>(callback: TransactionCallback<T>): Promise<T> {
+  async withSerializableTransaction<T> (callback: TransactionCallback<T>): Promise<T> {
     return this.execute(callback, 'SERIALIZABLE');
   }
 
-  async withRepeatableReadTransaction<T>(callback: TransactionCallback<T>): Promise<T> {
+  async withRepeatableReadTransaction<T> (callback: TransactionCallback<T>): Promise<T> {
     return this.execute(callback, 'REPEATABLE READ');
   }
 }

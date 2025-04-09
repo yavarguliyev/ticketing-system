@@ -6,7 +6,7 @@ import { MediumRateLimit } from '../decorators/throttle.decorator';
 @ApiTags('isolation-levels')
 @Controller('isolation-levels')
 export class IsolationLevelController {
-  constructor(private readonly isolationLevelService: IsolationLevelService) {}
+  constructor (private readonly isolationLevelService: IsolationLevelService) {}
 
   @ApiOperation({ summary: 'Test READ UNCOMMITTED isolation level (Dirty Read)' })
   @ApiParam({ name: 'ticketId', description: 'The ID of the ticket to use for testing' })
@@ -17,7 +17,7 @@ export class IsolationLevelController {
   })
   @MediumRateLimit()
   @Post('read-uncommitted/:ticketId')
-  async testReadUncommitted(@Param('ticketId') ticketId: string): Promise<IsolationTestResult> {
+  async testReadUncommitted (@Param('ticketId') ticketId: string): Promise<IsolationTestResult> {
     return this.isolationLevelService.testReadUncommitted(ticketId);
   }
 
@@ -30,7 +30,7 @@ export class IsolationLevelController {
   })
   @MediumRateLimit()
   @Post('read-committed/:ticketId')
-  async testReadCommitted(@Param('ticketId') ticketId: string): Promise<IsolationTestResult> {
+  async testReadCommitted (@Param('ticketId') ticketId: string): Promise<IsolationTestResult> {
     return this.isolationLevelService.testReadCommitted(ticketId);
   }
 
@@ -43,7 +43,7 @@ export class IsolationLevelController {
   })
   @MediumRateLimit()
   @Post('repeatable-read/:ticketId')
-  async testRepeatableRead(@Param('ticketId') ticketId: string): Promise<IsolationTestResult> {
+  async testRepeatableRead (@Param('ticketId') ticketId: string): Promise<IsolationTestResult> {
     return this.isolationLevelService.testRepeatableRead(ticketId);
   }
 
@@ -56,7 +56,7 @@ export class IsolationLevelController {
   })
   @MediumRateLimit()
   @Post('serializable/:ticketId')
-  async testSerializable(@Param('ticketId') ticketId: string): Promise<IsolationTestResult> {
+  async testSerializable (@Param('ticketId') ticketId: string): Promise<IsolationTestResult> {
     return this.isolationLevelService.testSerializable(ticketId);
   }
 
@@ -69,7 +69,7 @@ export class IsolationLevelController {
   })
   @MediumRateLimit()
   @Post('test-all/:ticketId')
-  async testAllIsolationLevels(@Param('ticketId') ticketId: string): Promise<IsolationTestResult[]> {
+  async testAllIsolationLevels (@Param('ticketId') ticketId: string): Promise<IsolationTestResult[]> {
     const readUncommitted = await this.isolationLevelService.testReadUncommitted(ticketId);
     const readCommitted = await this.isolationLevelService.testReadCommitted(ticketId);
     const repeatableRead = await this.isolationLevelService.testRepeatableRead(ticketId);

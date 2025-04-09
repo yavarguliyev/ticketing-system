@@ -1,6 +1,7 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreateTicketDto } from './create-ticket.dto';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { CreateTicketDto } from './create-ticket.dto';
 
 export class UpdateTicketDto extends PartialType(CreateTicketDto) {
   @ApiProperty({ description: 'Fields to update in the ticket' })

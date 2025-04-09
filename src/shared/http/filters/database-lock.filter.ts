@@ -4,7 +4,7 @@ import { QueryFailedError } from 'typeorm';
 
 @Catch(QueryFailedError)
 export class DatabaseLockExceptionFilter implements ExceptionFilter {
-  catch(exception: QueryFailedError, host: ArgumentsHost): void {
+  catch (exception: QueryFailedError, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -33,7 +33,7 @@ export class DatabaseLockExceptionFilter implements ExceptionFilter {
     }
   }
 
-  private isLockTimeoutError(exception: QueryFailedError): boolean {
+  private isLockTimeoutError (exception: QueryFailedError): boolean {
     const errorMessage = exception.message.toLowerCase();
     return (
       errorMessage.includes('lock') &&
@@ -41,7 +41,7 @@ export class DatabaseLockExceptionFilter implements ExceptionFilter {
     );
   }
 
-  private isDeadlockError(exception: QueryFailedError): boolean {
+  private isDeadlockError (exception: QueryFailedError): boolean {
     const errorMessage = exception.message.toLowerCase();
     return errorMessage.includes('deadlock');
   }

@@ -41,7 +41,7 @@ interface ResponseData {
 export class LoggingInterceptor implements NestInterceptor {
   private readonly logger: Logger = new Logger(LoggingInterceptor.name);
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept (context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const request = context.switchToHttp().getRequest<CustomRequest>();
     const method = request.method || 'UNKNOWN';
     const url = request.url || 'UNKNOWN';

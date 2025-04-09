@@ -5,9 +5,9 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class ErrorHandlerMiddleware implements NestMiddleware {
-  constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) {}
+  constructor (@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) {}
 
-  use(req: Request, res: Response, next: NextFunction): void {
+  use (req: Request, res: Response, next: NextFunction): void {
     const originalSend = res.send;
     const logger = this.logger;
     res.send = function (body: string | Buffer | object | undefined): Response {

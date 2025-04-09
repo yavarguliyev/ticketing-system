@@ -4,13 +4,11 @@ import { INestApplication, Logger } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { AppModule } from './app.module';
-import { DatabaseLockExceptionFilter } from './shared/http/filters/database-lock.filter';
-import { OptimisticLockExceptionFilter } from './shared/http/filters/optimistic-lock.filter';
 import { AppThrottlerGuard } from './shared/http/guards/throttler.guard';
 import { LoggingInterceptor } from './shared/http/interceptors/logging.interceptor';
 import { AppValidationPipe } from './shared/http/pipes/validation.pipe';
 
-async function bootstrap(): Promise<void> {
+async function bootstrap (): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
 
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
@@ -23,8 +21,6 @@ async function bootstrap(): Promise<void> {
 
   const loggingInterceptor: LoggingInterceptor = app.get(LoggingInterceptor);
   app.useGlobalInterceptors(loggingInterceptor);
-
-  app.useGlobalFilters(new DatabaseLockExceptionFilter(), new OptimisticLockExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Ticketing System API')

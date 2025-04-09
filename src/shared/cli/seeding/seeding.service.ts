@@ -7,13 +7,13 @@ import { Ticket } from '../../../modules/tickets/entities/ticket.entity';
 
 @Injectable()
 export class SeedingService {
-  constructor(
+  constructor (
     @InjectRepository(Ticket)
     private readonly ticketRepository: Repository<Ticket>,
     private readonly dataSource: DataSource
   ) {}
 
-  async seed(): Promise<void> {
+  async seed (): Promise<void> {
     if (!this.dataSource.isInitialized) {
       throw new Error('Database connection is not initialized');
     }
@@ -33,7 +33,7 @@ export class SeedingService {
     await this.ticketRepository.save(tickets);
   }
 
-  async clear(): Promise<void> {
+  async clear (): Promise<void> {
     await this.ticketRepository.clear();
   }
 }

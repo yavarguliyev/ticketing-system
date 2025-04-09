@@ -18,13 +18,13 @@ export interface IsolationTestResult {
 
 @Injectable()
 export class IsolationLevelService {
-  constructor(
+  constructor (
     @InjectRepository(Ticket)
     private readonly ticketsRepository: Repository<Ticket>,
     private readonly transactionService: TransactionService
   ) {}
 
-  async testReadUncommitted(ticketId: string): Promise<IsolationTestResult> {
+  async testReadUncommitted (ticketId: string): Promise<IsolationTestResult> {
     const startTime = Date.now();
     const ticketsBefore = await this.ticketsRepository.find({ where: { id: ticketId } });
     let success = false;
@@ -73,7 +73,7 @@ export class IsolationLevelService {
     };
   }
 
-  async testReadCommitted(ticketId: string): Promise<IsolationTestResult> {
+  async testReadCommitted (ticketId: string): Promise<IsolationTestResult> {
     const startTime = Date.now();
     const ticketsBefore = await this.ticketsRepository.find({ where: { id: ticketId } });
     let success = false;
@@ -128,7 +128,7 @@ export class IsolationLevelService {
     };
   }
 
-  async testRepeatableRead(ticketId: string): Promise<IsolationTestResult> {
+  async testRepeatableRead (ticketId: string): Promise<IsolationTestResult> {
     const startTime = Date.now();
     const ticketsBefore = await this.ticketsRepository.find({ where: { id: ticketId } });
     let success = false;
@@ -186,7 +186,7 @@ export class IsolationLevelService {
     };
   }
 
-  async testSerializable(ticketId: string): Promise<IsolationTestResult> {
+  async testSerializable (ticketId: string): Promise<IsolationTestResult> {
     const startTime = Date.now();
     const ticketsBefore = await this.ticketsRepository.find({ where: { id: ticketId } });
     let success = false;

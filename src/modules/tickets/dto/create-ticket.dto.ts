@@ -1,5 +1,5 @@
-import { IsString, IsNumber, IsPositive, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNumber, IsPositive, MinLength, MaxLength } from 'class-validator';
 
 export class CreateTicketDto {
   @ApiProperty({

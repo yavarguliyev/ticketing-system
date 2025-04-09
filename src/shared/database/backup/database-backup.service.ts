@@ -10,9 +10,9 @@ const execAsync = promisify(exec);
 export class DatabaseBackupService {
   private readonly logger: Logger = new Logger(DatabaseBackupService.name);
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor (private readonly configService: ConfigService) {}
 
-  async createBackup(): Promise<string> {
+  async createBackup (): Promise<string> {
     const backupDir = this.configService.get<string>('DB_BACKUP_DIR') || 'backups';
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupFile = join(process.cwd(), backupDir, `backup-${timestamp}.sql`);
@@ -29,7 +29,7 @@ export class DatabaseBackupService {
     return backupFile;
   }
 
-  async restoreBackup(backupFile: string): Promise<void> {
+  async restoreBackup (backupFile: string): Promise<void> {
     const command = this.buildRestoreCommand(backupFile);
     const { stderr } = await execAsync(command);
 
@@ -41,7 +41,7 @@ export class DatabaseBackupService {
     this.logger.log(`Backup restored successfully from: ${backupFile}`);
   }
 
-  private buildBackupCommand(backupFile: string): string {
+  private buildBackupCommand (backupFile: string): string {
     const host = this.configService.get<string>('DB_HOST');
     const port = this.configService.get<number>('DB_PORT');
     const username = this.configService.get<string>('DB_USERNAME');
@@ -50,7 +50,7 @@ export class DatabaseBackupService {
     return `pg_dump -h ${host} -p ${port} -U ${username} -d ${database} -F c -f ${backupFile}`;
   }
 
-  private buildRestoreCommand(backupFile: string): string {
+  private buildRestoreCommand (backupFile: string): string {
     const host = this.configService.get<string>('DB_HOST');
     const port = this.configService.get<number>('DB_PORT');
     const username = this.configService.get<string>('DB_USERNAME');

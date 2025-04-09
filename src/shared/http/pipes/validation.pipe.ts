@@ -2,7 +2,7 @@ import { ValidationPipe, ValidationError, BadRequestException, Injectable } from
 
 @Injectable()
 export class AppValidationPipe extends ValidationPipe {
-  constructor() {
+  constructor () {
     super({
       whitelist: true,
       forbidNonWhitelisted: true,
@@ -21,7 +21,7 @@ export class AppValidationPipe extends ValidationPipe {
     });
   }
 
-  private formatErrors(errors: ValidationError[]): string[] {
+  private formatErrors (errors: ValidationError[]): string[] {
     return errors.flatMap((error) => {
       if (error.children?.length) {
         return this.formatErrors(error.children);
