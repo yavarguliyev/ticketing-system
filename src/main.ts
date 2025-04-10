@@ -8,8 +8,10 @@ import { AppThrottlerGuard } from './shared/http/guards/throttler.guard';
 import { LoggingInterceptor } from './shared/http/interceptors/logging.interceptor';
 import { AppValidationPipe } from './shared/http/pipes/validation.pipe';
 
-async function bootstrap (): Promise<void> {
+async function bootstrap(): Promise<void> {
+  const logger = new Logger('Bootstrap');
   const app: INestApplication = await NestFactory.create(AppModule);
+  const port: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.enableCors();
@@ -32,8 +34,7 @@ async function bootstrap (): Promise<void> {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  const port: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-  await app.listen(port);
+  await app.listen(port, () => logger.log(`Service running on port ${port}`));
 }
 
 bootstrap().catch((error) => {

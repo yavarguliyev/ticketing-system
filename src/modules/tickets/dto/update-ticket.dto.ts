@@ -1,5 +1,6 @@
 import { PartialType } from '@nestjs/swagger';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsOptional } from 'class-validator';
 
 import { CreateTicketDto } from './create-ticket.dto';
 
@@ -15,4 +16,13 @@ export class UpdateTicketDto extends PartialType(CreateTicketDto) {
 
   @ApiProperty({ description: 'Updated quantity' })
   override quantity?: number;
+
+  @ApiProperty({
+    description: 'Version of the ticket for optimistic concurrency control',
+    example: 1,
+    required: true
+  })
+  @IsInt()
+  @IsOptional()
+  version?: number;
 }
