@@ -61,13 +61,10 @@ describe('Tickets CRUD Operations (e2e)', () => {
         userId: '00000000-0000-4000-a000-000000000000'
       };
 
-      const response = await request(getHttpServer(app))
-        .post('/tickets')
-        .send(createTicketDto)
-        .expect(201);
+      const response = await request(getHttpServer(app)).post('/tickets').send(createTicketDto).expect(201);
 
       const ticket = response.body as TicketResponse;
-      
+
       expect(ticket).toHaveProperty('id');
       expect(ticket.title).toBe(createTicketDto.title);
       expect(ticket.description).toBe(createTicketDto.description);
@@ -87,11 +84,8 @@ describe('Tickets CRUD Operations (e2e)', () => {
         quantity: -5
       };
 
-      const response = await request(getHttpServer(app))
-        .post('/tickets')
-        .send(invalidTicket)
-        .expect(400);
-      
+      const response = await request(getHttpServer(app)).post('/tickets').send(invalidTicket).expect(400);
+
       const responseBody = response.body as TicketResponse & { message: string };
 
       expect(responseBody).toHaveProperty('message');
@@ -101,17 +95,15 @@ describe('Tickets CRUD Operations (e2e)', () => {
 
   describe('GET /tickets', () => {
     it('should return all tickets', async () => {
-      const response = await request(getHttpServer(app))
-        .get('/tickets')
-        .expect(200);
-      
+      const response = await request(getHttpServer(app)).get('/tickets').expect(200);
+
       const responseBody = response.body as TicketResponse[];
 
       expect(Array.isArray(responseBody)).toBe(true);
       expect(responseBody.length).toBeGreaterThan(0);
-      
-      const createdTicket = responseBody.find(ticket => ticket.id === createdTicketId);
-      
+
+      const createdTicket = responseBody.find((ticket) => ticket.id === createdTicketId);
+
       expect(createdTicket).toBeDefined();
       expect(createdTicket?.title).toBe('E2E Test Ticket');
     });
@@ -119,22 +111,18 @@ describe('Tickets CRUD Operations (e2e)', () => {
 
   describe('GET /tickets/:id', () => {
     it('should return a ticket by ID', async () => {
-      const response = await request(getHttpServer(app))
-        .get(`/tickets/${createdTicketId}`)
-        .expect(200);
+      const response = await request(getHttpServer(app)).get(`/tickets/${createdTicketId}`).expect(200);
 
       const ticket = response.body as TicketResponse;
-      
+
       expect(ticket.id).toBe(createdTicketId);
       expect(ticket.title).toBe('E2E Test Ticket');
     });
 
     it('should return 404 for non-existent ticket ID', async () => {
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
-      
-      await request(getHttpServer(app))
-        .get(`/tickets/${nonExistentId}`)
-        .expect(404);
+
+      await request(getHttpServer(app)).get(`/tickets/${nonExistentId}`).expect(404);
     });
   });
 
@@ -152,7 +140,7 @@ describe('Tickets CRUD Operations (e2e)', () => {
         .expect(200);
 
       const updatedTicket = response.body as TicketResponse;
-      
+
       expect(updatedTicket.id).toBe(createdTicketId);
       expect(updatedTicket.title).toBe(updateTicketDto.title);
       expect(updatedTicket.description).toBe(updateTicketDto.description);
@@ -165,33 +153,24 @@ describe('Tickets CRUD Operations (e2e)', () => {
       const updateTicketDto: UpdateTicketDto = {
         title: 'This Update Should Fail'
       };
-      
-      await request(getHttpServer(app))
-        .patch(`/tickets/${nonExistentId}`)
-        .send(updateTicketDto)
-        .expect(404);
+
+      await request(getHttpServer(app)).patch(`/tickets/${nonExistentId}`).send(updateTicketDto).expect(404);
     });
   });
 
   describe('DELETE /tickets/:id', () => {
     it('should return 404 when deleting a non-existent ticket', async () => {
       const nonExistentId = '00000000-0000-0000-0000-000000000000';
-      
-      await request(getHttpServer(app))
-        .delete(`/tickets/${nonExistentId}`)
-        .expect(404);
+
+      await request(getHttpServer(app)).delete(`/tickets/${nonExistentId}`).expect(404);
     });
 
     it('should delete a ticket by ID', async () => {
-      await request(getHttpServer(app))
-        .delete(`/tickets/${createdTicketId}`)
-        .expect(200);
+      await request(getHttpServer(app)).delete(`/tickets/${createdTicketId}`).expect(200);
 
-      await request(getHttpServer(app))
-        .get(`/tickets/${createdTicketId}`)
-        .expect(404);
-      
+      await request(getHttpServer(app)).get(`/tickets/${createdTicketId}`).expect(404);
+
       createdTicketId = '';
     });
   });
-}); 
+});

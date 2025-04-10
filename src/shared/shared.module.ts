@@ -17,6 +17,7 @@ import { DatabaseBackupService } from './database/backup/database-backup.service
 import { DatabaseMetricsService } from './database/services/database-metrics.service';
 import { IsolationLevelService } from './database/services/isolation-level.service';
 import { TransactionService } from './database/services/transaction.service';
+import { RollbackStrategyService } from './database/services/rollback-strategy.service';
 import { OptimisticConcurrencyService } from './database/services/optimistic-concurrency.service';
 import { HealthController } from './http/controllers/health.controller';
 import { IsolationLevelController } from './http/controllers/isolation-level.controller';
@@ -87,6 +88,7 @@ import { Ticket } from '../modules/tickets/entities/ticket.entity';
     DatabaseMetricsService,
     DatabaseBackupService,
     DatabaseBackupCommand,
+    RollbackStrategyService,
     TransactionService,
     TransactionInterceptor,
     IsolationLevelService,
@@ -124,6 +126,7 @@ import { Ticket } from '../modules/tickets/entities/ticket.entity';
     DatabaseMetricsService,
     DatabaseBackupService,
     TypeOrmModule,
+    RollbackStrategyService,
     TransactionService,
     TransactionInterceptor,
     IsolationLevelService,

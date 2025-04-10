@@ -54,19 +54,19 @@ describe('TicketsService', () => {
 
   beforeEach(async () => {
     ticketRepository = mockRepositoryFactory();
-    
+
     transactionService = {
       execute: jest.fn().mockImplementation(<T>(callback: TransactionCallback<T>) => {
-        return Promise.resolve(callback({
-          getRepository: () => ticketRepository
-        } as unknown as EntityManager));
+        return Promise.resolve(
+          callback({
+            getRepository: () => ticketRepository
+          } as unknown as EntityManager)
+        );
       })
     };
-    
+
     optimisticConcurrencyService = {
-      executeWithRetry: jest.fn().mockImplementation(<T>(operation: () => Promise<T>) => 
-        Promise.resolve(operation())
-      )
+      executeWithRetry: jest.fn().mockImplementation(<T>(operation: () => Promise<T>) => Promise.resolve(operation()))
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -160,9 +160,7 @@ describe('TicketsService', () => {
     it('should throw NotFoundException when updating non-existent ticket', async () => {
       ticketRepository.findOne!.mockResolvedValue(null);
 
-      await expect(service.update('non-existent-id', { title: 'New Title' })).rejects.toThrow(
-        NotFoundException
-      );
+      await expect(service.update('non-existent-id', { title: 'New Title' })).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -186,7 +184,7 @@ describe('TicketsService', () => {
     it('should book a ticket successfully', async () => {
       const ticketBeforeBooking = { ...mockTicket };
       const ticketAfterBooking = { ...mockTicket, quantity: mockTicket.quantity - 2 };
-      
+
       ticketRepository.findOne!.mockResolvedValue(ticketBeforeBooking);
       ticketRepository.save!.mockResolvedValue(ticketAfterBooking);
 
@@ -201,17 +199,13 @@ describe('TicketsService', () => {
     it('should throw NotFoundException when booking a non-existent ticket', async () => {
       ticketRepository.findOne!.mockResolvedValue(null);
 
-      await expect(service.bookTicket('non-existent-id', mockTicket.userId, 2)).rejects.toThrow(
-        NotFoundException
-      );
+      await expect(service.bookTicket('non-existent-id', mockTicket.userId, 2)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw ConflictException when not enough tickets available', async () => {
       ticketRepository.findOne!.mockResolvedValue(mockTicket);
 
-      await expect(service.bookTicket(mockTicket.id, mockTicket.userId, 20)).rejects.toThrow(
-        ConflictException
-      );
+      await expect(service.bookTicket(mockTicket.id, mockTicket.userId, 20)).rejects.toThrow(ConflictException);
     });
   });
 
@@ -239,9 +233,7 @@ describe('TicketsService', () => {
     it('should throw NotFoundException when checking availability for non-existent ticket', async () => {
       ticketRepository.findOne!.mockResolvedValue(null);
 
-      await expect(service.checkAvailability('non-existent-id', 5)).rejects.toThrow(
-        NotFoundException
-      );
+      await expect(service.checkAvailability('non-existent-id', 5)).rejects.toThrow(NotFoundException);
     });
   });
-}); 
+});
