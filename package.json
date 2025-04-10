@@ -15,6 +15,8 @@
     "lint": "eslint \"{src,modules,shared,test}/**/*.ts\" --fix",
     "test": "jest --config ./jest.config.js",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:optimistic": "node test/optimistic-concurrency-test.js",
+    "test:isolation": "node test/transaction-isolation-test.js",
     "seed": "ts-node src/shared/cli/index.ts seed",
     "seed:clear": "ts-node src/shared/cli/index.ts seed:clear",
     "migration:run": "npm run typeorm -- migration:run -d src/shared/database/config/typeorm.config.ts",
