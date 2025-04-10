@@ -28,7 +28,7 @@ export interface TestModuleContext {
   optimisticConcurrencyService: OptimisticConcurrencyService;
 }
 
-export async function createTestModule(options: TestModuleOptions = {}): Promise<TestModuleContext> {
+export async function createTestModule (options: TestModuleOptions = {}): Promise<TestModuleContext> {
   const defaultImports = [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -74,13 +74,13 @@ export async function createTestModule(options: TestModuleOptions = {}): Promise
   };
 }
 
-export async function createTestingAppFromModule(testModule: TestingModule) {
+export async function createTestingAppFromModule (testModule: TestingModule) {
   const app = testModule.createNestApplication();
   await app.init();
   return app;
 }
 
-export async function closeTestModule(context: TestModuleContext) {
+export async function closeTestModule (context: TestModuleContext) {
   await context.module.close();
 
   if (context.dataSource.isInitialized) {

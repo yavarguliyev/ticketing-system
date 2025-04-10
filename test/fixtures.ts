@@ -16,15 +16,15 @@ export interface TicketFixture {
 export class FixtureBuilder {
   private ticketRepository: Repository<Ticket>;
 
-  constructor(ticketRepository: Repository<Ticket>) {
+  constructor (ticketRepository: Repository<Ticket>) {
     this.ticketRepository = ticketRepository;
   }
 
-  async createTicket(options: TestTicketOptions = {}): Promise<Ticket> {
+  async createTicket (options: TestTicketOptions = {}): Promise<Ticket> {
     return createTestTicket(this.ticketRepository, options);
   }
 
-  async createTickets(count: number, baseOptions: TestTicketOptions = {}): Promise<Ticket[]> {
+  async createTickets (count: number, baseOptions: TestTicketOptions = {}): Promise<Ticket[]> {
     const tickets: Ticket[] = [];
 
     for (let i = 0; i < count; i++) {
@@ -44,7 +44,7 @@ export class FixtureBuilder {
     return tickets;
   }
 
-  async createConcurrencyTestFixture(): Promise<Ticket> {
+  async createConcurrencyTestFixture (): Promise<Ticket> {
     return this.createTicket({
       title: 'Concurrency Test Ticket',
       description: 'Ticket for testing concurrency mechanisms',
@@ -54,7 +54,7 @@ export class FixtureBuilder {
     });
   }
 
-  async createPricedTickets(prices: number[]): Promise<Ticket[]> {
+  async createPricedTickets (prices: number[]): Promise<Ticket[]> {
     const tickets: Ticket[] = [];
 
     for (let i = 0; i < prices.length; i++) {
@@ -72,7 +72,7 @@ export class FixtureBuilder {
     return tickets;
   }
 
-  async createLowQuantityTicket(): Promise<Ticket> {
+  async createLowQuantityTicket (): Promise<Ticket> {
     return this.createTicket({
       title: 'Low Quantity Ticket',
       description: 'Ticket with very limited availability',
@@ -82,7 +82,7 @@ export class FixtureBuilder {
     });
   }
 
-  async createHighQuantityTicket(): Promise<Ticket> {
+  async createHighQuantityTicket (): Promise<Ticket> {
     return this.createTicket({
       title: 'High Quantity Ticket',
       description: 'Ticket with high availability',
@@ -92,7 +92,7 @@ export class FixtureBuilder {
     });
   }
 
-  async createIsolationTestFixture(): Promise<Ticket> {
+  async createIsolationTestFixture (): Promise<Ticket> {
     return this.createTicket({
       title: 'Isolation Test Ticket',
       description: 'Ticket for testing transaction isolation levels',
@@ -102,7 +102,7 @@ export class FixtureBuilder {
     });
   }
 
-  async createOptimisticLockingTestFixture(): Promise<Ticket> {
+  async createOptimisticLockingTestFixture (): Promise<Ticket> {
     return this.createTicket({
       title: 'Version Test Ticket',
       description: 'Ticket for testing optimistic locking with version tracking',
@@ -112,7 +112,7 @@ export class FixtureBuilder {
     });
   }
 
-  async createPessimisticLockingTestFixture(): Promise<Ticket> {
+  async createPessimisticLockingTestFixture (): Promise<Ticket> {
     return this.createTicket({
       title: 'Lock Test Ticket',
       description: 'Ticket for testing pessimistic locking',
@@ -122,7 +122,7 @@ export class FixtureBuilder {
     });
   }
 
-  async createFixtureSet(): Promise<{
+  async createFixtureSet (): Promise<{
     defaultTicket: Ticket;
     concurrencyTicket: Ticket;
     lowQuantityTicket: Ticket;

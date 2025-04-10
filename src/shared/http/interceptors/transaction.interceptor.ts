@@ -21,9 +21,9 @@ interface CustomRequest extends Request {
 export class TransactionInterceptor implements NestInterceptor {
   private readonly logger = new Logger(TransactionInterceptor.name);
 
-  constructor(private readonly transactionService: TransactionService) {}
+  constructor (private readonly transactionService: TransactionService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept (context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const handler = context.getHandler();
     const target = context.getClass();
 

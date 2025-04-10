@@ -23,7 +23,7 @@ export interface TestTicketOptions {
   userId?: string;
 }
 
-export async function setupTestApp(): Promise<TestContext> {
+export async function setupTestApp (): Promise<TestContext> {
   if (!testDataSource.isInitialized) {
     await testDataSource.initialize();
   }
@@ -54,7 +54,7 @@ export async function setupTestApp(): Promise<TestContext> {
   };
 }
 
-export async function teardownTestApp(context: TestContext): Promise<void> {
+export async function teardownTestApp (context: TestContext): Promise<void> {
   await context.app.close();
 
   if (context.dataSource.isInitialized) {
@@ -62,7 +62,7 @@ export async function teardownTestApp(context: TestContext): Promise<void> {
   }
 }
 
-export async function resetDatabase(dataSource: DataSource): Promise<void> {
+export async function resetDatabase (dataSource: DataSource): Promise<void> {
   const entities = dataSource.entityMetadatas;
 
   for (const entity of entities) {
@@ -71,7 +71,7 @@ export async function resetDatabase(dataSource: DataSource): Promise<void> {
   }
 }
 
-export async function createTestTicket(repository: Repository<Ticket>, options: TestTicketOptions = {}): Promise<Ticket> {
+export async function createTestTicket (repository: Repository<Ticket>, options: TestTicketOptions = {}): Promise<Ticket> {
   const defaultOptions: TestTicketOptions = {
     title: 'Test Ticket',
     description: 'Test Description',
@@ -92,7 +92,7 @@ export async function createTestTicket(repository: Repository<Ticket>, options: 
   return repository.save(ticket);
 }
 
-export async function createBatchTestTickets(repository: Repository<Ticket>, count: number, options: TestTicketOptions = {}): Promise<Ticket[]> {
+export async function createBatchTestTickets (repository: Repository<Ticket>, count: number, options: TestTicketOptions = {}): Promise<Ticket[]> {
   const tickets: Ticket[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -106,11 +106,11 @@ export async function createBatchTestTickets(repository: Repository<Ticket>, cou
   return tickets;
 }
 
-export async function delay(ms: number): Promise<void> {
+export async function delay (ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries: number = 3, delayMs: number = 100, backoffFactor: number = 1.5): Promise<T> {
+export async function executeWithRetry<T> (operation: () => Promise<T>, maxRetries: number = 3, delayMs: number = 100, backoffFactor: number = 1.5): Promise<T> {
   let lastError: Error | null = null;
   let currentDelay = delayMs;
 
@@ -130,7 +130,7 @@ export async function executeWithRetry<T>(operation: () => Promise<T>, maxRetrie
   throw lastError || new Error('Operation failed after max retries');
 }
 
-export function getRandomInt(min: number, max: number): number {
+export function getRandomInt (min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;

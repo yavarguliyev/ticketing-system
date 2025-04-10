@@ -22,18 +22,18 @@ import {
 @ApiTags('tickets')
 @Controller('tickets')
 export class TicketsController {
-  constructor(
+  constructor (
     private readonly ticketsService: TicketsService,
     private readonly optimisticConcurrencyService: OptimisticConcurrencyService
   ) {}
 
   @ApiCreateEndpoint({ summary: 'Create a new ticket', type: Ticket })
-  async create(@Body() createTicketDto: CreateTicketDto): Promise<Ticket> {
+  async create (@Body() createTicketDto: CreateTicketDto): Promise<Ticket> {
     return this.ticketsService.create(createTicketDto);
   }
 
   @ApiGetAllEndpoint({ summary: 'Get all tickets', type: Ticket })
-  async findAll(): Promise<Ticket[]> {
+  async findAll (): Promise<Ticket[]> {
     return this.ticketsService.findAll();
   }
 
@@ -43,7 +43,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket' })]
   })
-  async findOne(@Param('id') id: string): Promise<Ticket> {
+  async findOne (@Param('id') id: string): Promise<Ticket> {
     return this.ticketsService.findOne(id);
   }
 
@@ -53,7 +53,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to update' })]
   })
-  async update(@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto): Promise<Ticket> {
+  async update (@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto): Promise<Ticket> {
     return this.ticketsService.update(id, updateTicketDto);
   }
 
@@ -62,7 +62,7 @@ export class TicketsController {
     path: ':id',
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to delete' })]
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove (@Param('id') id: string): Promise<void> {
     return this.ticketsService.remove(id);
   }
 
@@ -72,7 +72,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to book' })]
   })
-  async bookTicket(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
+  async bookTicket (@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.bookTicket(id, userId, bookTicketDto.quantity);
   }
@@ -83,7 +83,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to release' })]
   })
-  async releaseTicket(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
+  async releaseTicket (@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.releaseTicket(id, userId, bookTicketDto.quantity);
   }
@@ -96,7 +96,7 @@ export class TicketsController {
       ApiQuery({ name: 'quantity', description: 'Number of tickets to check availability for', required: true })
     ]
   })
-  async checkAvailability(@Param('id') id: string, @Query('quantity') quantity: number): Promise<{ available: boolean }> {
+  async checkAvailability (@Param('id') id: string, @Query('quantity') quantity: number): Promise<{ available: boolean }> {
     const available = await this.ticketsService.checkAvailability(id, quantity);
     return { available };
   }
@@ -107,7 +107,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to book' })]
   })
-  async bookTicketOptimistic(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
+  async bookTicketOptimistic (@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.bookTicketOptimistic(id, userId, bookTicketDto.quantity);
   }
@@ -118,7 +118,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to release' })]
   })
-  async releaseTicketOptimistic(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
+  async releaseTicketOptimistic (@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.releaseTicketOptimistic(id, userId, bookTicketDto.quantity);
   }
@@ -131,7 +131,7 @@ export class TicketsController {
       ApiQuery({ name: 'quantity', description: 'Number of tickets to check availability for', required: true })
     ]
   })
-  async checkAvailabilityOptimistic(@Param('id') id: string, @Query('quantity') quantity: number): Promise<{ available: boolean }> {
+  async checkAvailabilityOptimistic (@Param('id') id: string, @Query('quantity') quantity: number): Promise<{ available: boolean }> {
     const available = await this.ticketsService.checkAvailabilityOptimistic(id, quantity);
     return { available };
   }
@@ -147,7 +147,7 @@ export class TicketsController {
     ],
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to test with' })]
   })
-  async testOptimisticConcurrency(@Param('id') id: string): Promise<{ message: string; originalVersion: number; finalVersion: number; updates: number }> {
+  async testOptimisticConcurrency (@Param('id') id: string): Promise<{ message: string; originalVersion: number; finalVersion: number; updates: number }> {
     const originalTicket = await this.ticketsService.findOne(id);
     const originalVersion = originalTicket.version;
 
@@ -189,7 +189,7 @@ export class TicketsController {
     responses: [{ status: 409, description: 'Version conflict detected after max retries.' }],
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to update' })]
   })
-  async updateWithRetry(@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto): Promise<Ticket> {
+  async updateWithRetry (@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto): Promise<Ticket> {
     return this.optimisticConcurrencyService.executeWithRetry(() => {
       return this.ticketsService.update(id, updateTicketDto);
     });
@@ -201,7 +201,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to book' })]
   })
-  async bookTicketReadUncommitted(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
+  async bookTicketReadUncommitted (@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.bookTicketWithIsolation(id, userId, bookTicketDto.quantity, 'READ UNCOMMITTED');
   }
@@ -212,7 +212,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to book' })]
   })
-  async bookTicketReadCommitted(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
+  async bookTicketReadCommitted (@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.bookTicketWithIsolation(id, userId, bookTicketDto.quantity, 'READ COMMITTED');
   }
@@ -223,7 +223,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to book' })]
   })
-  async bookTicketRepeatableRead(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
+  async bookTicketRepeatableRead (@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.bookTicketWithIsolation(id, userId, bookTicketDto.quantity, 'REPEATABLE READ');
   }
@@ -234,7 +234,7 @@ export class TicketsController {
     type: Ticket,
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to book' })]
   })
-  async bookTicketSerializable(@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
+  async bookTicketSerializable (@Param('id') id: string, @Body() bookTicketDto: BookTicketDto): Promise<Ticket> {
     const userId = bookTicketDto.userId || 'default-user-id';
     return this.ticketsService.bookTicketWithIsolation(id, userId, bookTicketDto.quantity, 'SERIALIZABLE');
   }
@@ -250,7 +250,7 @@ export class TicketsController {
     ],
     extraDecorators: [ApiParam({ name: 'id', description: 'The ID of the ticket to test with' })]
   })
-  async testIsolationAnomalies(@Param('id') id: string): Promise<{
+  async testIsolationAnomalies (@Param('id') id: string): Promise<{
     dirtyRead: { original: number; uncommitted: number; afterRollback: number };
     nonRepeatableRead: { firstRead: number; secondRead: number; changed: boolean };
     phantomRead: { firstCount: number; secondCount: number; isPhantom: boolean };

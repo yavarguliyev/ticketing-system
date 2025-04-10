@@ -33,7 +33,7 @@ interface AxiosErrorResponse {
 
 type ErrorResponseData = { message?: string };
 
-function getErrorMessage(error: unknown): string {
+function getErrorMessage (error: unknown): string {
   if (axios.isAxiosError<ErrorResponseData>(error)) {
     return error.response?.data?.message ?? error.message;
   }
@@ -201,7 +201,7 @@ describe('OptimisticConcurrency', () => {
   });
 });
 
-async function createTestTicket(): Promise<Ticket> {
+async function createTestTicket (): Promise<Ticket> {
   try {
     const response = await axios.post(`${API_URL}/tickets`, {
       title: 'Optimistic Concurrency Test',
@@ -215,7 +215,7 @@ async function createTestTicket(): Promise<Ticket> {
   }
 }
 
-async function bookTicket(ticketId: string, quantity: number, userId: string = `user-${Math.floor(Math.random() * 1000)}`): Promise<BookingResult> {
+async function bookTicket (ticketId: string, quantity: number, userId: string = `user-${Math.floor(Math.random() * 1000)}`): Promise<BookingResult> {
   try {
     const startTime = Date.now();
     const response = await axios.post(`${API_URL}/tickets/${ticketId}/book-optimistic`, {
@@ -255,7 +255,7 @@ async function bookTicket(ticketId: string, quantity: number, userId: string = `
   }
 }
 
-async function simulateConcurrentBookings(ticketId: string, operations: number = CONCURRENT_OPERATIONS): Promise<BookingResult[]> {
+async function simulateConcurrentBookings (ticketId: string, operations: number = CONCURRENT_OPERATIONS): Promise<BookingResult[]> {
   console.log(`Starting ${operations} concurrent booking operations for ticket ${ticketId}`);
 
   const operationPromises = Array(operations)
@@ -294,7 +294,7 @@ async function simulateConcurrentBookings(ticketId: string, operations: number =
   return results;
 }
 
-async function runOptimisticConcurrencyTest(operations: number = CONCURRENT_OPERATIONS): Promise<void> {
+async function runOptimisticConcurrencyTest (operations: number = CONCURRENT_OPERATIONS): Promise<void> {
   const ticket = await createTestTicket();
   const results = await simulateConcurrentBookings(ticket.id, operations);
 

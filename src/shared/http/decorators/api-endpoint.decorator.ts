@@ -19,7 +19,7 @@ interface ApiEndpointOptions {
   extraDecorators?: Array<ClassDecorator | MethodDecorator | PropertyDecorator>;
 }
 
-function getDefaultStatusCode(method: string): number {
+function getDefaultStatusCode (method: string): number {
   switch (method) {
     case 'POST':
       return HttpStatus.CREATED;
@@ -30,7 +30,7 @@ function getDefaultStatusCode(method: string): number {
   }
 }
 
-function getDefaultDescription(method: string, statusCode: HttpStatus): string {
+function getDefaultDescription (method: string, statusCode: HttpStatus): string {
   switch (statusCode) {
     case HttpStatus.OK:
       return 'The request has succeeded.';
@@ -43,7 +43,7 @@ function getDefaultDescription(method: string, statusCode: HttpStatus): string {
   }
 }
 
-export function ApiEndpoint(options: ApiEndpointOptions) {
+export function ApiEndpoint (options: ApiEndpointOptions) {
   const { summary, method, path = '', statusCode = getDefaultStatusCode(method), responses = [], rateLimit = 'MEDIUM', extraDecorators = [] } = options;
 
   const apiOperation = ApiOperation({ summary });
@@ -106,7 +106,7 @@ export function ApiEndpoint(options: ApiEndpointOptions) {
   return applyDecorators(apiOperation, ...apiResponses, rateLimitDecorator, methodDecorator, HttpCode(statusCode), ...extraDecorators);
 }
 
-export function ApiCreateEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
+export function ApiCreateEndpoint<T> (options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
   const { type, responses = [], ...rest } = options;
 
   return ApiEndpoint({
@@ -117,7 +117,7 @@ export function ApiCreateEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'>
   });
 }
 
-export function ApiGetAllEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
+export function ApiGetAllEndpoint<T> (options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
   const { type, responses = [], ...rest } = options;
 
   return ApiEndpoint({
@@ -128,7 +128,7 @@ export function ApiGetAllEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'>
   });
 }
 
-export function ApiGetOneEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
+export function ApiGetOneEndpoint<T> (options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
   const { type, responses = [], ...rest } = options;
 
   return ApiEndpoint({
@@ -139,7 +139,7 @@ export function ApiGetOneEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'>
   });
 }
 
-export function ApiUpdateEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
+export function ApiUpdateEndpoint<T> (options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
   const { type, responses = [], ...rest } = options;
 
   return ApiEndpoint({
@@ -155,7 +155,7 @@ export function ApiUpdateEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'>
   });
 }
 
-export function ApiDeleteEndpoint(options: Omit<ApiEndpointOptions, 'method'>) {
+export function ApiDeleteEndpoint (options: Omit<ApiEndpointOptions, 'method'>) {
   const { responses = [], ...rest } = options;
 
   return ApiEndpoint({
@@ -167,7 +167,7 @@ export function ApiDeleteEndpoint(options: Omit<ApiEndpointOptions, 'method'>) {
   });
 }
 
-export function ApiBookTicketEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
+export function ApiBookTicketEndpoint<T> (options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
   const { type, responses = [], ...rest } = options;
 
   return ApiEndpoint({
@@ -184,7 +184,7 @@ export function ApiBookTicketEndpoint<T>(options: Omit<ApiEndpointOptions, 'meth
   });
 }
 
-export function ApiCheckAvailabilityEndpoint(options: Omit<ApiEndpointOptions, 'method'>) {
+export function ApiCheckAvailabilityEndpoint (options: Omit<ApiEndpointOptions, 'method'>) {
   const { responses = [], ...rest } = options;
 
   return ApiEndpoint({
@@ -195,7 +195,7 @@ export function ApiCheckAvailabilityEndpoint(options: Omit<ApiEndpointOptions, '
   });
 }
 
-export function ApiOptimisticBookTicketEndpoint<T>(options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
+export function ApiOptimisticBookTicketEndpoint<T> (options: Omit<ApiEndpointOptions, 'method'> & { type: Type<T> }) {
   const { type, responses = [], ...rest } = options;
 
   return ApiEndpoint({
