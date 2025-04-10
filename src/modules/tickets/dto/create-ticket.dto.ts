@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsPositive, MinLength, MaxLength } from 'class-validator';
+import { IsString, IsNumber, IsPositive, MinLength, MaxLength, IsUUID } from 'class-validator';
 
 export class CreateTicketDto {
   @ApiProperty({
@@ -41,4 +41,11 @@ export class CreateTicketDto {
   @IsNumber()
   @IsPositive()
   quantity!: number;
+
+  @ApiProperty({
+    description: 'The ID of the user who created the ticket',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @IsUUID()
+  userId!: string;
 }
