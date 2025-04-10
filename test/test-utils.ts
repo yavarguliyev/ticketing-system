@@ -71,10 +71,7 @@ export async function resetDatabase(dataSource: DataSource): Promise<void> {
   }
 }
 
-export async function createTestTicket(
-  repository: Repository<Ticket>,
-  options: TestTicketOptions = {}
-): Promise<Ticket> {
+export async function createTestTicket(repository: Repository<Ticket>, options: TestTicketOptions = {}): Promise<Ticket> {
   const defaultOptions: TestTicketOptions = {
     title: 'Test Ticket',
     description: 'Test Description',
@@ -95,11 +92,7 @@ export async function createTestTicket(
   return repository.save(ticket);
 }
 
-export async function createBatchTestTickets(
-  repository: Repository<Ticket>,
-  count: number,
-  options: TestTicketOptions = {}
-): Promise<Ticket[]> {
+export async function createBatchTestTickets(repository: Repository<Ticket>, count: number, options: TestTicketOptions = {}): Promise<Ticket[]> {
   const tickets: Ticket[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -117,12 +110,7 @@ export async function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function executeWithRetry<T>(
-  operation: () => Promise<T>,
-  maxRetries: number = 3,
-  delayMs: number = 100,
-  backoffFactor: number = 1.5
-): Promise<T> {
+export async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries: number = 3, delayMs: number = 100, backoffFactor: number = 1.5): Promise<T> {
   let lastError: Error | null = null;
   let currentDelay = delayMs;
 

@@ -39,11 +39,7 @@ import { Ticket } from '../modules/tickets/entities/ticket.entity';
     WinstonModule.forRoot({
       transports: [
         new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.json(),
-            utilities.format.nestLike('Ticketing System')
-          )
+          format: winston.format.combine(winston.format.timestamp(), winston.format.json(), utilities.format.nestLike('Ticketing System'))
         })
       ]
     }),
@@ -134,7 +130,7 @@ import { Ticket } from '../modules/tickets/entities/ticket.entity';
   ]
 })
 export class SharedModule implements NestModule {
-  configure (consumer: MiddlewareConsumer): void {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(ErrorHandlerMiddleware).forRoutes('*');
   }
 }

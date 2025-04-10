@@ -55,11 +55,7 @@ describe('OptimisticConcurrencyService', () => {
       const optimisticLockError = new Error('Version conflict');
       mockIsOptimisticLockError.mockImplementation((err) => err === optimisticLockError);
 
-      const operation = jest
-        .fn()
-        .mockRejectedValueOnce(optimisticLockError)
-        .mockRejectedValueOnce(optimisticLockError)
-        .mockResolvedValueOnce('success');
+      const operation = jest.fn().mockRejectedValueOnce(optimisticLockError).mockRejectedValueOnce(optimisticLockError).mockResolvedValueOnce('success');
 
       const result = await service.executeWithRetry(operation, {
         initialDelay: 10,

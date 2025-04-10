@@ -134,10 +134,7 @@ describe('Tickets CRUD Operations (e2e)', () => {
         price: 200
       };
 
-      const response = await request(getHttpServer(app))
-        .patch(`/tickets/${createdTicketId}`)
-        .send(updateTicketDto)
-        .expect(200);
+      const response = await request(getHttpServer(app)).patch(`/tickets/${createdTicketId}`).send(updateTicketDto).expect(200);
 
       const updatedTicket = response.body as TicketResponse;
 

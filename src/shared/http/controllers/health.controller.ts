@@ -5,7 +5,7 @@ import { Logger } from 'winston';
 
 @Controller('health')
 export class HealthController {
-  constructor (
+  constructor(
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
     private db: TypeOrmHealthIndicator,
@@ -14,10 +14,7 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
-  check () {
-    return this.health.check([
-      () => this.http.pingCheck('api', 'http://localhost:3000'),
-      () => this.db.pingCheck('database')
-    ]);
+  check() {
+    return this.health.check([() => this.http.pingCheck('api', 'http://localhost:3000'), () => this.db.pingCheck('database')]);
   }
 }

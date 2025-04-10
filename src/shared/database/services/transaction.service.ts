@@ -33,15 +33,14 @@ export type TransactionErrorHandler = (error: Error) => boolean | Promise<boolea
 export class TransactionService {
   private readonly logger = new Logger(TransactionService.name);
 
-  constructor (
+  constructor(
     private readonly dataSource: DataSource,
     private readonly rollbackStrategyService: RollbackStrategyService
   ) {
-    // Register default rollback strategies
     this.rollbackStrategyService.registerDefaultStrategies();
   }
 
-  async execute<T> (
+  async execute<T>(
     callback: TransactionCallback<T>,
     isolationLevel: IsolationLevel = 'READ COMMITTED',
     timeout?: number,
@@ -71,12 +70,7 @@ export class TransactionService {
     }
   }
 
-  private async executeTransaction<T> (
-    callback: TransactionCallback<T>,
-    isolationLevel: IsolationLevel = 'READ COMMITTED',
-    timeout?: number,
-    statementTimeout?: number
-  ): Promise<T> {
+  private async executeTransaction<T>(callback: TransactionCallback<T>, isolationLevel: IsolationLevel = 'READ COMMITTED', timeout?: number, statementTimeout?: number): Promise<T> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction(isolationLevel);
@@ -88,10 +82,7 @@ export class TransactionService {
 
     await queryRunner.query(`SET statement_timeout = ${stmtTimeout}`);
 
-    this.logger.debug(
-      `Starting transaction with isolation level ${isolationLevel}, ` +
-        `transaction timeout ${txTimeout}ms, statement timeout ${stmtTimeout}ms`
-    );
+    this.logger.debug(`Starting transaction with isolation level ${isolationLevel}, ` + `transaction timeout ${txTimeout}ms, statement timeout ${stmtTimeout}ms`);
 
     if (txTimeout > 0) {
       timeoutHandle = setTimeout(() => {
@@ -125,44 +116,31 @@ export class TransactionService {
     }
   }
 
-  private delay (ms: number): Promise<void> {
+  private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  getIsolationLevel (target: object, propertyKey: string): IsolationLevel | undefined {
+  getIsolationLevel(target: object, propertyKey: string): IsolationLevel | undefined {
     return Reflect.getMetadata(TRANSACTION_ISOLATION_LEVEL, target, propertyKey) as IsolationLevel | undefined;
   }
 
-  getTimeout (target: object, propertyKey: string): number | undefined {
+  getTimeout(target: object, propertyKey: string): number | undefined {
     return Reflect.getMetadata(TRANSACTION_TIMEOUT, target, propertyKey) as number | undefined;
   }
 
-  async withTransaction<T> (
-    callback: TransactionCallback<T>,
-    isolationLevel: IsolationLevel = 'READ COMMITTED',
-    options?: Partial<TransactionOptions>
-  ): Promise<T> {
+  async withTransaction<T>(callback: TransactionCallback<T>, isolationLevel: IsolationLevel = 'READ COMMITTED', options?: Partial<TransactionOptions>): Promise<T> {
     return this.execute(callback, isolationLevel, options?.timeout, options?.statementTimeout, options);
   }
 
-  async withSerializableTransaction<T> (
-    callback: TransactionCallback<T>,
-    options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>
-  ): Promise<T> {
+  async withSerializableTransaction<T>(callback: TransactionCallback<T>, options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>): Promise<T> {
     return this.withTransaction(callback, 'SERIALIZABLE', options);
   }
 
-  async withRepeatableReadTransaction<T> (
-    callback: TransactionCallback<T>,
-    options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>
-  ): Promise<T> {
+  async withRepeatableReadTransaction<T>(callback: TransactionCallback<T>, options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>): Promise<T> {
     return this.withTransaction(callback, 'REPEATABLE READ', options);
   }
 
-  async withReadCommittedTransaction<T> (
-    callback: TransactionCallback<T>,
-    options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>
-  ): Promise<T> {
+  async withReadCommittedTransaction<T>(callback: TransactionCallback<T>, options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>): Promise<T> {
     return this.withTransaction(callback, 'READ COMMITTED', options);
   }
 }

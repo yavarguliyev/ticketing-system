@@ -24,12 +24,7 @@ async function bootstrap(): Promise<void> {
   const loggingInterceptor: LoggingInterceptor = app.get(LoggingInterceptor);
   app.useGlobalInterceptors(loggingInterceptor);
 
-  const config = new DocumentBuilder()
-    .setTitle('Ticketing System API')
-    .setDescription('A robust ticketing system with proper concurrency handling')
-    .setVersion('1.0')
-    .addTag('tickets')
-    .build();
+  const config = new DocumentBuilder().setTitle('Ticketing System API').setDescription('A robust ticketing system with proper concurrency handling').setVersion('1.0').addTag('tickets').build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

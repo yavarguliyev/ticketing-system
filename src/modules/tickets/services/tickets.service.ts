@@ -64,9 +64,7 @@ export class TicketsService {
       }
 
       if (ticket.quantity < quantity) {
-        throw new ConflictException(
-          `Not enough tickets available. Requested: ${quantity}, Available: ${ticket.quantity}`
-        );
+        throw new ConflictException(`Not enough tickets available. Requested: ${quantity}, Available: ${ticket.quantity}`);
       }
 
       ticket.quantity -= quantity;
@@ -124,9 +122,7 @@ export class TicketsService {
           }
 
           if (ticket.quantity < quantity) {
-            throw new ConflictException(
-              `Not enough tickets available. Requested: ${quantity}, Available: ${ticket.quantity}`
-            );
+            throw new ConflictException(`Not enough tickets available. Requested: ${quantity}, Available: ${ticket.quantity}`);
           }
 
           const initialVersion = ticket.version;
@@ -217,20 +213,13 @@ export class TicketsService {
     }, 'READ COMMITTED');
   }
 
-  async bookTicketWithIsolation(
-    id: string,
-    userId: string,
-    quantity: number,
-    isolationLevel: IsolationLevel
-  ): Promise<Ticket> {
+  async bookTicketWithIsolation(id: string, userId: string, quantity: number, isolationLevel: IsolationLevel): Promise<Ticket> {
     return this.transactionService.execute(async (entityManager) => {
       const ticketRepository = entityManager.getRepository(Ticket);
 
       const options: FindOneOptions<Ticket> = {
         where: { id },
-        ...(isolationLevel === 'SERIALIZABLE' || isolationLevel === 'REPEATABLE READ'
-          ? { lock: { mode: 'pessimistic_write', onLocked: 'nowait' } }
-          : {})
+        ...(isolationLevel === 'SERIALIZABLE' || isolationLevel === 'REPEATABLE READ' ? { lock: { mode: 'pessimistic_write', onLocked: 'nowait' } } : {})
       };
 
       const ticket = await ticketRepository.findOne(options);
@@ -240,9 +229,7 @@ export class TicketsService {
       }
 
       if (ticket.quantity < quantity) {
-        throw new ConflictException(
-          `Not enough tickets available. Requested: ${quantity}, Available: ${ticket.quantity}`
-        );
+        throw new ConflictException(`Not enough tickets available. Requested: ${quantity}, Available: ${ticket.quantity}`);
       }
 
       ticket.quantity -= quantity;
@@ -251,20 +238,13 @@ export class TicketsService {
     }, isolationLevel);
   }
 
-  async releaseTicketWithIsolation(
-    id: string,
-    userId: string,
-    quantity: number,
-    isolationLevel: IsolationLevel
-  ): Promise<Ticket> {
+  async releaseTicketWithIsolation(id: string, userId: string, quantity: number, isolationLevel: IsolationLevel): Promise<Ticket> {
     return this.transactionService.execute(async (entityManager) => {
       const ticketRepository = entityManager.getRepository(Ticket);
 
       const options: FindOneOptions<Ticket> = {
         where: { id },
-        ...(isolationLevel === 'SERIALIZABLE' || isolationLevel === 'REPEATABLE READ'
-          ? { lock: { mode: 'pessimistic_write', onLocked: 'nowait' } }
-          : {})
+        ...(isolationLevel === 'SERIALIZABLE' || isolationLevel === 'REPEATABLE READ' ? { lock: { mode: 'pessimistic_write', onLocked: 'nowait' } } : {})
       };
 
       const ticket = await ticketRepository.findOne(options);
@@ -332,16 +312,13 @@ export class TicketsService {
     }, 'READ COMMITTED');
   }
 
-  async simulatePhantomRead(
-    minPrice: number,
-    maxPrice: number
-  ): Promise<{ firstCount: number; secondCount: number; isPhantom: boolean }> {
+  async simulatePhantomRead(minPrice: number, maxPrice: number): Promise<{ firstCount: number; secondCount: number; isPhantom: boolean }> {
     const tempTicket = this.ticketsRepository.create({
       title: 'Phantom Ticket',
       description: 'This ticket will appear as a phantom read',
       price: minPrice + (maxPrice - minPrice) / 2,
       quantity: 10,
-      userId: 'test-user-id'
+      userId: '123e4567-e89b-12d3-a456-426614174000'
     });
 
     return this.transactionService.execute(async (entityManager) => {

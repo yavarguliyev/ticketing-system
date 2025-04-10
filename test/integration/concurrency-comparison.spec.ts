@@ -69,7 +69,7 @@ interface ComparisonTestResult {
   };
 }
 
-function getErrorMessage (error: unknown): string {
+function getErrorMessage(error: unknown): string {
   if (axios.isAxiosError<ErrorResponseData>(error)) {
     return error.response?.data?.message ?? error.message;
   }
@@ -202,7 +202,7 @@ describe('ConcurrencyComparison', () => {
   });
 });
 
-async function createTestTicket (title: string = 'Concurrency Test Ticket'): Promise<Ticket> {
+async function createTestTicket(title: string = 'Concurrency Test Ticket'): Promise<Ticket> {
   try {
     const response = await axios.post(`${API_URL}/tickets`, {
       title,
@@ -216,12 +216,7 @@ async function createTestTicket (title: string = 'Concurrency Test Ticket'): Pro
   }
 }
 
-async function bookTicket (
-  ticketId: string,
-  quantity: number,
-  type: ConcurrencyType,
-  userId: string = 'test-user-id'
-): Promise<BookingResult> {
+async function bookTicket(ticketId: string, quantity: number, type: ConcurrencyType, userId: string = 'test-user-id'): Promise<BookingResult> {
   const startTime = Date.now();
   const endpoint = `http://localhost:3000/tickets/${ticketId}/${type === 'optimistic' ? 'book-optimistic' : 'book'}`;
 
@@ -245,16 +240,8 @@ async function bookTicket (
   }
 }
 
-async function releaseTicket (
-  ticketId: string,
-  type: ConcurrencyType,
-  bookingId: string,
-  userId: string = 'test-user-id'
-): Promise<BookingResult> {
-  const endpoint =
-    type === 'optimistic'
-      ? `${API_URL}/tickets/${ticketId}/release-optimistic/${bookingId}`
-      : `${API_URL}/tickets/${ticketId}/release/${bookingId}`;
+async function releaseTicket(ticketId: string, type: ConcurrencyType, bookingId: string, userId: string = 'test-user-id'): Promise<BookingResult> {
+  const endpoint = type === 'optimistic' ? `${API_URL}/tickets/${ticketId}/release-optimistic/${bookingId}` : `${API_URL}/tickets/${ticketId}/release/${bookingId}`;
 
   const startTime = Date.now();
 
@@ -279,14 +266,9 @@ async function releaseTicket (
   }
 }
 
-async function simulateConcurrentBookings (
+async function simulateConcurrentBookings(
   ticketId: string,
-  bookingFunction: (
-    ticketId: string,
-    quantity: number,
-    type: ConcurrencyType,
-    userId?: string
-  ) => Promise<BookingResult>,
+  bookingFunction: (ticketId: string, quantity: number, type: ConcurrencyType, userId?: string) => Promise<BookingResult>,
   operations: number | { quantity: number; concurrencyType: ConcurrencyType }[]
 ): Promise<BookingResult[]> {
   const operationsArray =
@@ -301,7 +283,7 @@ async function simulateConcurrentBookings (
   return Promise.all(bookingPromises);
 }
 
-function analyzeResults (results: BookingResult[]): TestResults {
+function analyzeResults(results: BookingResult[]): TestResults {
   const successful = results.filter((r) => r.status === 'success');
   const successCount = successful.length;
   const conflicts = results.filter((r) => r.status === 'error' && r.code === 409).length;
@@ -322,10 +304,7 @@ function analyzeResults (results: BookingResult[]): TestResults {
   };
 }
 
-async function runConcurrencyTest (
-  concurrencyType: 'optimistic' | 'pessimistic',
-  operations: number = CONCURRENT_OPERATIONS
-): Promise<TestResults> {
+async function runConcurrencyTest(concurrencyType: 'optimistic' | 'pessimistic', operations: number = CONCURRENT_OPERATIONS): Promise<TestResults> {
   const ticket = await createTestTicket(`${concurrencyType}-concurrency-test`);
   const bookingFn = concurrencyType === 'optimistic' ? bookTicket : bookTicket;
 
@@ -340,9 +319,7 @@ async function runConcurrencyTest (
 
   try {
     const finalTicket = await axios.get<TicketSuccessResponse>(`${API_URL}/tickets/${ticket.id}`);
-    console.log(
-      `Final ticket state: ${finalTicket.data?.quantity} tickets remaining, version ${finalTicket.data?.version}`
-    );
+    console.log(`Final ticket state: ${finalTicket.data?.quantity} tickets remaining, version ${finalTicket.data?.version}`);
   } catch {
     console.error('Failed to get final ticket state');
   }
@@ -350,10 +327,7 @@ async function runConcurrencyTest (
   return analyzeResults(results);
 }
 
-async function runComparisonTest (
-  operations: number = CONCURRENT_OPERATIONS,
-  iterations: number = TEST_ITERATIONS
-): Promise<void> {
+async function runComparisonTest(operations: number = CONCURRENT_OPERATIONS, iterations: number = TEST_ITERATIONS): Promise<void> {
   console.log(`Starting concurrency comparison test with ${operations} concurrent operations per iteration`);
   console.log(`Running ${iterations} iterations for more accurate results\n`);
 
@@ -402,9 +376,7 @@ async function runComparisonTest (
   console.log('\n=== SUMMARY ===');
   console.log(`- Optimistic success rate: ${successRateOptimistic.toFixed(2)}%`);
   console.log(`- Pessimistic success rate: ${successRatePessimistic.toFixed(2)}%`);
-  console.log(
-    `- Optimistic is ${speedDifference.toFixed(2)}x ${speedDifference > 1 ? 'faster' : 'slower'} than pessimistic`
-  );
+  console.log(`- Optimistic is ${speedDifference.toFixed(2)}x ${speedDifference > 1 ? 'faster' : 'slower'} than pessimistic`);
 }
 
 if (require.main === module) {
@@ -414,11 +386,4 @@ if (require.main === module) {
   });
 }
 
-export {
-  runComparisonTest,
-  runConcurrencyTest,
-  simulateConcurrentBookings,
-  bookTicket,
-  createTestTicket,
-  releaseTicket
-};
+export { runComparisonTest, runConcurrencyTest, simulateConcurrentBookings, bookTicket, createTestTicket, releaseTicket };

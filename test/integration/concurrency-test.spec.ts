@@ -33,13 +33,9 @@ jest.mock('../test-module', () => ({
 
     const mockEntityManager = {
       getRepository: jest.fn().mockReturnValue(mockTicketRepository),
-      transaction: jest
-        .fn()
-        .mockImplementation(
-          async <T>(callback: (transactionalEntityManager: EntityManager) => Promise<T>): Promise<T> => {
-            return await callback(mockEntityManager as unknown as EntityManager);
-          }
-        ),
+      transaction: jest.fn().mockImplementation(async <T>(callback: (transactionalEntityManager: EntityManager) => Promise<T>): Promise<T> => {
+        return await callback(mockEntityManager as unknown as EntityManager);
+      }),
       findOne: jest.fn().mockResolvedValue(mockTicket),
       save: jest.fn().mockResolvedValue({ ...mockTicket, version: 2 })
     };
@@ -56,13 +52,9 @@ jest.mock('../test-module', () => ({
         release: jest.fn().mockResolvedValue(undefined),
         manager: mockEntityManager
       }),
-      transaction: jest
-        .fn()
-        .mockImplementation(
-          async <T>(callback: (transactionalEntityManager: EntityManager) => Promise<T>): Promise<T> => {
-            return await callback(mockEntityManager as unknown as EntityManager);
-          }
-        )
+      transaction: jest.fn().mockImplementation(async <T>(callback: (transactionalEntityManager: EntityManager) => Promise<T>): Promise<T> => {
+        return await callback(mockEntityManager as unknown as EntityManager);
+      })
     };
 
     const mockOptimisticConcurrencyService = {

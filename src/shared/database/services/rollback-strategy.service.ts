@@ -15,12 +15,12 @@ export class RollbackStrategyService {
   private readonly logger = new Logger(RollbackStrategyService.name);
   private readonly strategies: RollbackStrategy[] = [];
 
-  registerStrategy (strategy: RollbackStrategy): RollbackStrategyService {
+  registerStrategy(strategy: RollbackStrategy): RollbackStrategyService {
     this.strategies.push(strategy);
     return this;
   }
 
-  registerDefaultStrategies (): RollbackStrategyService {
+  registerDefaultStrategies(): RollbackStrategyService {
     this.registerStrategy({
       shouldRollback: (error) => this.isDeadlockError(error),
       onRollback: () => this.logger.warn('Deadlock detected, transaction rolled back'),
@@ -48,7 +48,7 @@ export class RollbackStrategyService {
     return this;
   }
 
-  async isRetryable (error: unknown): Promise<boolean> {
+  async isRetryable(error: unknown): Promise<boolean> {
     for (const strategy of this.strategies) {
       try {
         const shouldRollback = await strategy.shouldRollback(error);
@@ -62,7 +62,7 @@ export class RollbackStrategyService {
     return false;
   }
 
-  async handleRollback (error: unknown, rollbackAction: RollbackAction): Promise<boolean> {
+  async handleRollback(error: unknown, rollbackAction: RollbackAction): Promise<boolean> {
     let strategyMatched = false;
     let rollbackError: unknown;
 
@@ -88,15 +88,13 @@ export class RollbackStrategyService {
     }
 
     if (!strategyMatched) {
-      this.logger.error(
-        `Transaction rolled back due to error: ${error instanceof Error ? error.message : String(error)}`
-      );
+      this.logger.error(`Transaction rolled back due to error: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     return strategyMatched;
   }
 
-  private isDeadlockError (error: unknown): boolean {
+  private isDeadlockError(error: unknown): boolean {
     if (error instanceof QueryFailedError) {
       const errorMessage = error.message.toLowerCase();
       return errorMessage.includes('deadlock detected');
@@ -104,19 +102,15 @@ export class RollbackStrategyService {
     return false;
   }
 
-  private isSerializationError (error: unknown): boolean {
+  private isSerializationError(error: unknown): boolean {
     if (error instanceof QueryFailedError) {
       const errorMessage = error.message.toLowerCase();
-      return (
-        errorMessage.includes('could not serialize access') ||
-        errorMessage.includes('concurrent update') ||
-        errorMessage.includes('serialization failure')
-      );
+      return errorMessage.includes('could not serialize access') || errorMessage.includes('concurrent update') || errorMessage.includes('serialization failure');
     }
     return false;
   }
 
-  private isStatementTimeoutError (error: unknown): boolean {
+  private isStatementTimeoutError(error: unknown): boolean {
     if (error instanceof QueryFailedError) {
       const errorMessage = error.message.toLowerCase();
       return errorMessage.includes('statement timeout');
@@ -124,14 +118,10 @@ export class RollbackStrategyService {
     return false;
   }
 
-  private isLockTimeoutError (error: unknown): boolean {
+  private isLockTimeoutError(error: unknown): boolean {
     if (error instanceof QueryFailedError) {
       const errorMessage = error.message.toLowerCase();
-      return (
-        errorMessage.includes('lock timeout') ||
-        errorMessage.includes('could not obtain lock') ||
-        errorMessage.includes('lock not available')
-      );
+      return errorMessage.includes('lock timeout') || errorMessage.includes('could not obtain lock') || errorMessage.includes('lock not available');
     }
     return false;
   }

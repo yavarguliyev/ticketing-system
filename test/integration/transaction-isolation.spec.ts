@@ -160,11 +160,7 @@ describe('Transaction Isolation Levels', () => {
         await Promise.all([tx1Promise, tx2Promise]);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        expect(
-          errorMessage.includes('serialize') ||
-            errorMessage.includes('serialization') ||
-            errorMessage.includes('concurrent update')
-        ).toBeTruthy();
+        expect(errorMessage.includes('serialize') || errorMessage.includes('serialization') || errorMessage.includes('concurrent update')).toBeTruthy();
       } finally {
         if (secondTicket?.id) {
           await ticketRepository.delete(secondTicket.id);

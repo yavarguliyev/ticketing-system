@@ -21,9 +21,9 @@ interface CustomRequest extends Request {
 export class TransactionInterceptor implements NestInterceptor {
   private readonly logger = new Logger(TransactionInterceptor.name);
 
-  constructor (private readonly transactionService: TransactionService) {}
+  constructor(private readonly transactionService: TransactionService) {}
 
-  intercept (context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const handler = context.getHandler();
     const target = context.getClass();
 
@@ -43,9 +43,7 @@ export class TransactionInterceptor implements NestInterceptor {
     const handlerName = handler.name;
     const controllerName = target.name;
 
-    this.logger.debug(
-      `Starting transaction for ${controllerName}.${handlerName} with isolation level ${isolationLevel}`
-    );
+    this.logger.debug(`Starting transaction for ${controllerName}.${handlerName} with isolation level ${isolationLevel}`);
 
     return from(
       this.transactionService.execute(
@@ -53,7 +51,7 @@ export class TransactionInterceptor implements NestInterceptor {
           req.entityManager = entityManager;
 
           this.logger.debug(`Executing ${controllerName}.${handlerName} in transaction context`);
-          const result = await lastValueFrom(next.handle()) as unknown;
+          const result = (await lastValueFrom(next.handle())) as unknown;
 
           this.logger.debug(`Completed ${controllerName}.${handlerName} successfully, committing transaction`);
           return result;
