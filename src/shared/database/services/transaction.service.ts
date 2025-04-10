@@ -25,9 +25,9 @@ export const ISOLATION_LEVEL_TIMEOUTS: Record<IsolationLevel, number> = {
 export class TransactionService {
   private readonly logger = new Logger(TransactionService.name);
 
-  constructor(private readonly dataSource: DataSource) {}
+  constructor (private readonly dataSource: DataSource) {}
 
-  async execute<T>(
+  async execute<T> (
     callback: TransactionCallback<T>,
     isolationLevel: IsolationLevel = 'READ COMMITTED',
     timeout?: number,
@@ -91,15 +91,15 @@ export class TransactionService {
     }
   }
 
-  getIsolationLevel(target: object, propertyKey: string): IsolationLevel | undefined {
+  getIsolationLevel (target: object, propertyKey: string): IsolationLevel | undefined {
     return Reflect.getMetadata(TRANSACTION_ISOLATION_LEVEL, target, propertyKey) as IsolationLevel | undefined;
   }
 
-  getTimeout(target: object, propertyKey: string): number | undefined {
+  getTimeout (target: object, propertyKey: string): number | undefined {
     return Reflect.getMetadata(TRANSACTION_TIMEOUT, target, propertyKey) as number | undefined;
   }
 
-  async withTransaction<T>(
+  async withTransaction<T> (
     callback: TransactionCallback<T>,
     isolationLevel: IsolationLevel = 'READ COMMITTED',
     options?: Partial<TransactionOptions>
@@ -107,21 +107,21 @@ export class TransactionService {
     return this.execute(callback, isolationLevel, options?.timeout, options?.statementTimeout);
   }
 
-  async withSerializableTransaction<T>(
+  async withSerializableTransaction<T> (
     callback: TransactionCallback<T>,
     options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>
   ): Promise<T> {
     return this.execute(callback, 'SERIALIZABLE', options?.timeout, options?.statementTimeout);
   }
 
-  async withRepeatableReadTransaction<T>(
+  async withRepeatableReadTransaction<T> (
     callback: TransactionCallback<T>,
     options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>
   ): Promise<T> {
     return this.execute(callback, 'REPEATABLE READ', options?.timeout, options?.statementTimeout);
   }
 
-  async withReadCommittedTransaction<T>(
+  async withReadCommittedTransaction<T> (
     callback: TransactionCallback<T>,
     options?: Partial<Omit<TransactionOptions, 'isolationLevel'>>
   ): Promise<T> {

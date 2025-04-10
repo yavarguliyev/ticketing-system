@@ -69,7 +69,7 @@ interface ComparisonTestResult {
   };
 }
 
-function getErrorMessage(error: unknown): string {
+function getErrorMessage (error: unknown): string {
   if (axios.isAxiosError<ErrorResponseData>(error)) {
     return error.response?.data?.message ?? error.message;
   }
@@ -202,7 +202,7 @@ describe('ConcurrencyComparison', () => {
   });
 });
 
-async function createTestTicket(title: string = 'Concurrency Test Ticket'): Promise<Ticket> {
+async function createTestTicket (title: string = 'Concurrency Test Ticket'): Promise<Ticket> {
   try {
     const response = await axios.post(`${API_URL}/tickets`, {
       title,
@@ -216,7 +216,7 @@ async function createTestTicket(title: string = 'Concurrency Test Ticket'): Prom
   }
 }
 
-async function bookTicket(
+async function bookTicket (
   ticketId: string,
   quantity: number,
   type: ConcurrencyType,
@@ -245,7 +245,7 @@ async function bookTicket(
   }
 }
 
-async function releaseTicket(
+async function releaseTicket (
   ticketId: string,
   type: ConcurrencyType,
   bookingId: string,
@@ -279,7 +279,7 @@ async function releaseTicket(
   }
 }
 
-async function simulateConcurrentBookings(
+async function simulateConcurrentBookings (
   ticketId: string,
   bookingFunction: (
     ticketId: string,
@@ -301,7 +301,7 @@ async function simulateConcurrentBookings(
   return Promise.all(bookingPromises);
 }
 
-function analyzeResults(results: BookingResult[]): TestResults {
+function analyzeResults (results: BookingResult[]): TestResults {
   const successful = results.filter((r) => r.status === 'success');
   const successCount = successful.length;
   const conflicts = results.filter((r) => r.status === 'error' && r.code === 409).length;
@@ -322,7 +322,7 @@ function analyzeResults(results: BookingResult[]): TestResults {
   };
 }
 
-async function runConcurrencyTest(
+async function runConcurrencyTest (
   concurrencyType: 'optimistic' | 'pessimistic',
   operations: number = CONCURRENT_OPERATIONS
 ): Promise<TestResults> {
@@ -350,7 +350,7 @@ async function runConcurrencyTest(
   return analyzeResults(results);
 }
 
-async function runComparisonTest(
+async function runComparisonTest (
   operations: number = CONCURRENT_OPERATIONS,
   iterations: number = TEST_ITERATIONS
 ): Promise<void> {

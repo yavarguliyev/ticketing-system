@@ -10,23 +10,23 @@ import { OptimisticConcurrencyService } from '../../../shared/database/services/
 
 @Injectable()
 export class TicketsService {
-  constructor(
+  constructor (
     @InjectRepository(Ticket)
     private readonly ticketsRepository: Repository<Ticket>,
     private readonly transactionService: TransactionService,
     private readonly optimisticConcurrencyService: OptimisticConcurrencyService
   ) {}
 
-  async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
+  async create (createTicketDto: CreateTicketDto): Promise<Ticket> {
     const ticket = this.ticketsRepository.create(createTicketDto);
     return this.ticketsRepository.save(ticket);
   }
 
-  async findAll(): Promise<Ticket[]> {
+  async findAll (): Promise<Ticket[]> {
     return this.ticketsRepository.find();
   }
 
-  async findOne(id: string): Promise<Ticket> {
+  async findOne (id: string): Promise<Ticket> {
     const ticket = await this.ticketsRepository.findOne({ where: { id } });
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${id} not found`);
@@ -34,7 +34,7 @@ export class TicketsService {
     return ticket;
   }
 
-  async update(id: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
+  async update (id: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
     const ticket = await this.findOne(id);
 
     Object.assign(ticket, updateTicketDto);
@@ -42,14 +42,14 @@ export class TicketsService {
     return this.ticketsRepository.save(ticket);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove (id: string): Promise<void> {
     const result = await this.ticketsRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Ticket with ID ${id} not found`);
     }
   }
 
-  async bookTicket(id: string, userId: string, quantity: number): Promise<Ticket> {
+  async bookTicket (id: string, userId: string, quantity: number): Promise<Ticket> {
     return this.transactionService.execute(async (entityManager) => {
       const ticketRepository = entityManager.getRepository(Ticket);
 
@@ -74,7 +74,7 @@ export class TicketsService {
     }, 'SERIALIZABLE');
   }
 
-  async releaseTicket(id: string, userId: string, quantity: number): Promise<Ticket> {
+  async releaseTicket (id: string, userId: string, quantity: number): Promise<Ticket> {
     return this.transactionService.execute(async (entityManager) => {
       const ticketRepository = entityManager.getRepository(Ticket);
 
@@ -93,7 +93,7 @@ export class TicketsService {
     }, 'SERIALIZABLE');
   }
 
-  async checkAvailability(id: string, quantity: number): Promise<boolean> {
+  async checkAvailability (id: string, quantity: number): Promise<boolean> {
     return this.transactionService.execute(async (entityManager) => {
       const ticketRepository = entityManager.getRepository(Ticket);
 
@@ -110,7 +110,7 @@ export class TicketsService {
     }, 'REPEATABLE READ');
   }
 
-  async bookTicketOptimistic(id: string, userId: string, quantity: number): Promise<Ticket> {
+  async bookTicketOptimistic (id: string, userId: string, quantity: number): Promise<Ticket> {
     return this.optimisticConcurrencyService.executeWithRetry(
       async () => {
         return this.transactionService.execute(async (entityManager) => {
@@ -159,7 +159,7 @@ export class TicketsService {
     );
   }
 
-  async releaseTicketOptimistic(id: string, userId: string, quantity: number): Promise<Ticket> {
+  async releaseTicketOptimistic (id: string, userId: string, quantity: number): Promise<Ticket> {
     return this.optimisticConcurrencyService.executeWithRetry(
       async () => {
         return this.transactionService.execute(async (entityManager) => {
@@ -202,7 +202,7 @@ export class TicketsService {
     );
   }
 
-  async checkAvailabilityOptimistic(id: string, quantity: number): Promise<boolean> {
+  async checkAvailabilityOptimistic (id: string, quantity: number): Promise<boolean> {
     return this.transactionService.execute(async (entityManager) => {
       const ticketRepository = entityManager.getRepository(Ticket);
 

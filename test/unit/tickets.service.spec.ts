@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, DataSource, QueryFailedError, ObjectLiteral, EntityManager } from 'typeorm';
+import { Repository, EntityManager } from 'typeorm';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
 import { TicketsService } from '../../src/modules/tickets/services/tickets.service';
@@ -56,9 +56,11 @@ describe('TicketsService', () => {
     ticketRepository = mockRepositoryFactory();
     
     transactionService = {
-      execute: jest.fn().mockImplementation(<T>(callback: TransactionCallback<T>) => 
-        Promise.resolve(callback({ getRepository: () => ticketRepository as any } as EntityManager))
-      )
+      execute: jest.fn().mockImplementation(<T>(callback: TransactionCallback<T>) => {
+        return Promise.resolve(callback({
+          getRepository: () => ticketRepository
+        } as unknown as EntityManager));
+      })
     };
     
     optimisticConcurrencyService = {

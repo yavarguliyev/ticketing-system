@@ -131,7 +131,7 @@ import { Ticket } from '../modules/tickets/entities/ticket.entity';
   ]
 })
 export class SharedModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): void {
+  configure (consumer: MiddlewareConsumer): void {
     consumer.apply(ErrorHandlerMiddleware).forRoutes('*');
   }
 }

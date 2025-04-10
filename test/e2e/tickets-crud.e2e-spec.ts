@@ -3,6 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import request from 'supertest';
+import { Server } from 'http';
 
 import { AppModule } from '../../src/app.module';
 import { Ticket } from '../../src/modules/tickets/entities/ticket.entity';
@@ -19,9 +20,9 @@ interface TicketResponse {
   version: number;
 }
 
-const getHttpServer = (app: INestApplication): any => {
+const getHttpServer = (app: INestApplication): Server => {
   const httpAdapter = app.getHttpAdapter();
-  return httpAdapter.getInstance();
+  return httpAdapter.getInstance() as Server;
 };
 
 describe('Tickets CRUD Operations (e2e)', () => {
@@ -40,12 +41,10 @@ describe('Tickets CRUD Operations (e2e)', () => {
 
     ticketRepository = moduleFixture.get<Repository<Ticket>>(getRepositoryToken(Ticket));
 
-    // Clean up any test tickets that might be left from previous test runs
     await ticketRepository.delete({ title: 'E2E Test Ticket' });
   });
 
   afterAll(async () => {
-    // Clean up after tests
     if (createdTicketId) {
       await ticketRepository.delete(createdTicketId);
     }
@@ -82,19 +81,21 @@ describe('Tickets CRUD Operations (e2e)', () => {
 
     it('should return 400 when creating a ticket with invalid data', async () => {
       const invalidTicket = {
-        title: '', // Empty title
+        title: '',
         description: 'Invalid ticket',
-        price: -10, // Negative price
-        quantity: -5 // Negative quantity
+        price: -10,
+        quantity: -5
       };
 
       const response = await request(getHttpServer(app))
         .post('/tickets')
         .send(invalidTicket)
         .expect(400);
+      
+      const responseBody = response.body as TicketResponse & { message: string };
 
-      expect(response.body).toHaveProperty('message');
-      expect(Array.isArray(response.body.message)).toBe(true);
+      expect(responseBody).toHaveProperty('message');
+      expect(Array.isArray(responseBody.message)).toBe(true);
     });
   });
 
@@ -103,12 +104,13 @@ describe('Tickets CRUD Operations (e2e)', () => {
       const response = await request(getHttpServer(app))
         .get('/tickets')
         .expect(200);
-
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThan(0);
       
-      const tickets = response.body as TicketResponse[];
-      const createdTicket = tickets.find(ticket => ticket.id === createdTicketId);
+      const responseBody = response.body as TicketResponse[];
+
+      expect(Array.isArray(responseBody)).toBe(true);
+      expect(responseBody.length).toBeGreaterThan(0);
+      
+      const createdTicket = responseBody.find(ticket => ticket.id === createdTicketId);
       
       expect(createdTicket).toBeDefined();
       expect(createdTicket?.title).toBe('E2E Test Ticket');
@@ -155,7 +157,7 @@ describe('Tickets CRUD Operations (e2e)', () => {
       expect(updatedTicket.title).toBe(updateTicketDto.title);
       expect(updatedTicket.description).toBe(updateTicketDto.description);
       expect(Number(updatedTicket.price)).toBe(updateTicketDto.price);
-      expect(updatedTicket.version).toBe(2); // Version should be incremented
+      expect(updatedTicket.version).toBe(2);
     });
 
     it('should return 404 when updating a non-existent ticket', async () => {
@@ -185,12 +187,10 @@ describe('Tickets CRUD Operations (e2e)', () => {
         .delete(`/tickets/${createdTicketId}`)
         .expect(200);
 
-      // Verify the ticket is deleted
       await request(getHttpServer(app))
         .get(`/tickets/${createdTicketId}`)
         .expect(404);
       
-      // Reset createdTicketId since we deleted it
       createdTicketId = '';
     });
   });

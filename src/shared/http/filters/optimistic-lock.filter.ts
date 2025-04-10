@@ -7,7 +7,7 @@ import { Response, Request } from 'express';
 export class OptimisticLockExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(OptimisticLockExceptionFilter.name);
 
-  catch(exception: QueryFailedError | ConflictException, host: ArgumentsHost): void {
+  catch (exception: QueryFailedError | ConflictException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -33,7 +33,7 @@ export class OptimisticLockExceptionFilter implements ExceptionFilter {
     }
   }
 
-  private isVersionConflictError(error: QueryFailedError): boolean {
+  private isVersionConflictError (error: QueryFailedError): boolean {
     const errorMessage = error.message.toLowerCase();
 
     return (
@@ -44,7 +44,7 @@ export class OptimisticLockExceptionFilter implements ExceptionFilter {
     );
   }
 
-  private isOptimisticLockMessage(exception: ConflictException): boolean {
+  private isOptimisticLockMessage (exception: ConflictException): boolean {
     const message = exception.message.toLowerCase();
     return (
       message.includes('version conflict') ||
@@ -54,7 +54,7 @@ export class OptimisticLockExceptionFilter implements ExceptionFilter {
     );
   }
 
-  private getReadableErrorMessage(error: QueryFailedError): string {
+  private getReadableErrorMessage (error: QueryFailedError): string {
     const errorMessage = error.message.toLowerCase();
 
     if (errorMessage.includes('version check failed')) {
