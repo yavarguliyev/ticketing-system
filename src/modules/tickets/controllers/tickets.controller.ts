@@ -7,11 +7,15 @@ import { UpdateTicketDto } from '../dto/update-ticket.dto';
 import { Ticket } from '../entities/ticket.entity';
 import { LowRateLimit, MediumRateLimit, SensitiveRateLimit } from '../../../shared/http/decorators/throttle.decorator';
 import { BookTicketDto } from '../dto/book-ticket.dto';
+import { OptimisticConcurrencyService } from '../../../shared/database/services/optimistic-concurrency.service';
 
 @ApiTags('tickets')
 @Controller('tickets')
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {}
+  constructor(
+    private readonly ticketsService: TicketsService,
+    private readonly optimisticConcurrencyService: OptimisticConcurrencyService
+  ) {}
 
   @ApiOperation({ summary: 'Create a new ticket' })
   @ApiResponse({ status: 201, description: 'The ticket has been successfully created.', type: Ticket })
@@ -182,5 +186,18 @@ export class TicketsController {
       finalVersion: finalTicket.version,
       updates: successfulUpdates
     };
+  }
+
+  @ApiOperation({ summary: 'Update a ticket with retry mechanism' })
+  @ApiParam({ name: 'id', description: 'The ID of the ticket to update' })
+  @ApiResponse({ status: 200, description: 'The ticket has been successfully updated.', type: Ticket })
+  @ApiResponse({ status: 404, description: 'Ticket not found.' })
+  @ApiResponse({ status: 409, description: 'Version conflict detected after max retries.' })
+  @SensitiveRateLimit()
+  @Patch(':id/with-retry')
+  async updateWithRetry(@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto): Promise<Ticket> {
+    return this.optimisticConcurrencyService.executeWithRetry(() => {
+      return this.ticketsService.update(id, updateTicketDto);
+    });
   }
 }

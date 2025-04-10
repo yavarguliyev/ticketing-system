@@ -110,7 +110,6 @@ export class TicketsService {
     }, 'REPEATABLE READ');
   }
 
-  // Optimistic concurrency approach
   async bookTicketOptimistic(id: string, userId: string, quantity: number): Promise<Ticket> {
     return this.optimisticConcurrencyService.executeWithRetry(
       async () => {

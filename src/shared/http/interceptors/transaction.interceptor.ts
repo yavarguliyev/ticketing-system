@@ -1,8 +1,14 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
-import { Observable, from } from 'rxjs';
+import { Observable, from, lastValueFrom } from 'rxjs';
 import { Request } from 'express';
 
 import { TransactionService } from '../../database/services/transaction.service';
+import {
+  TRANSACTION_ISOLATION_LEVEL,
+  TRANSACTION_STATEMENT_TIMEOUT,
+  TRANSACTION_TIMEOUT
+} from '../decorators/transaction.decorator';
+import { IsolationLevel } from 'typeorm/driver/types/IsolationLevel';
 
 interface CustomRequest extends Request {
   entityManager?: unknown;
@@ -10,13 +16,15 @@ interface CustomRequest extends Request {
 
 @Injectable()
 export class TransactionInterceptor implements NestInterceptor {
-  constructor (private readonly transactionService: TransactionService) {}
+  constructor(private readonly transactionService: TransactionService) {}
 
-  intercept (context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const handler = context.getHandler();
     const target = context.getClass();
-    const isolationLevel = this.transactionService.getIsolationLevel(target, handler.name);
-    const timeout = this.transactionService.getTimeout(target, handler.name);
+
+    const isolationLevel = Reflect.getMetadata(TRANSACTION_ISOLATION_LEVEL, target, handler.name) as IsolationLevel;
+    const timeout = Reflect.getMetadata(TRANSACTION_TIMEOUT, target, handler.name) as number;
+    const statementTimeout = Reflect.getMetadata(TRANSACTION_STATEMENT_TIMEOUT, target, handler.name) as number;
 
     if (!isolationLevel) {
       return next.handle();
@@ -29,10 +37,11 @@ export class TransactionInterceptor implements NestInterceptor {
         async (entityManager) => {
           req.entityManager = entityManager;
 
-          return (await next.handle().toPromise()) as unknown;
+          return (await lastValueFrom(next.handle())) as unknown;
         },
         isolationLevel,
-        timeout
+        timeout,
+        statementTimeout
       )
     );
   }
